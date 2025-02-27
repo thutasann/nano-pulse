@@ -4,66 +4,29 @@ name: Node.js CI
 on:
   push:
     branches: [master]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.gitignore'
   pull_request:
     branches: [master]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.gitignore'
-
-env:
-  NODE_VERSION: '20'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
 
       - name: Install dependencies
-        run: |
-          npm install
-          npm install -g npm@latest
-
-      - name: Generate package-lock.json
-        run: npm install --package-lock-only
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+        run: npm install
 
       - name: Build project
         run: npm run build
-        if: success()
 
-      - name: Cache build output
-        uses: actions/cache@v4
-        with:
-          path: |
-            dist
-            .next
-            out
-          key: ${{ runner.os }}-build-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true

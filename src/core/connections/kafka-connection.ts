@@ -1,6 +1,6 @@
 import { Kafka, logLevel } from 'kafkajs';
 import { configuration } from '../../shared/config';
-import { constants } from '../../shared/constants/app.constants';
+import { constants } from '../../shared/constants';
 
 const config = configuration();
 

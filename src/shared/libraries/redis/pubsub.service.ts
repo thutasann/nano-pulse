@@ -7,8 +7,11 @@ const sub_client = new IORedis(redis_url);
 
 /**
  * Redis Publish Event
+ * @description Publish message to Redis channel
  * @param channel - channel name
  * @param message - message to be published
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
  */
 export async function redis_publish(channel: string, message: string): Promise<void> {
   await pub_client.publish(channel, message);
@@ -16,8 +19,11 @@ export async function redis_publish(channel: string, message: string): Promise<v
 
 /**
  * Redis Subscribe
+ * @description Subscribe to Redis channel
  * @param channel - channel name
  * @param callback - callback fn
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
  */
 export function redis_subscribe(channel: string, callback: (message: string) => void): void {
   sub_client.subscribe(channel);

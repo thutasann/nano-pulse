@@ -1,6 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+/**
+ * Configuration Object from Environment Variables
+ * @description Configuration for the application
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
+ */
 export const configuration = () => {
   return {
     // Application

@@ -6,7 +6,11 @@ import { getRedisUrl } from '../connections/redis-connection';
 
 /**
  * Initialize Sockets
+ * @description Initialize Socket.io server
  * @param httpServer - Http Server
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
+ * @since 2025-02-27
  */
 export function initializeSocket(httpServer: HTTPServer) {
   try {

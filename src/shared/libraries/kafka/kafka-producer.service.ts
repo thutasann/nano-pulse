@@ -5,6 +5,9 @@ const producer = kafka.producer();
 
 /**
  * Initialize Kafka Producer
+ * @description Initialize Kafka producer with kafka connection
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
  */
 export async function initialize_producer() {
   await producer.connect();
@@ -13,8 +16,11 @@ export async function initialize_producer() {
 
 /**
  * Kafka Producer Function
+ * @description Produce message to Kafka topic
  * @param topic - topic name
  * @param message - message
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
  */
 export async function kafka_produce(topic: string, message: string) {
   try {

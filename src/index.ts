@@ -4,12 +4,13 @@ import express, { Application } from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
 import morgan from 'morgan';
-import { configuration } from './core/config';
-import { connectDB } from './core/database/mongo-connection';
+import { connectDB } from './core/connections/mongo-connection';
 import { errorHandler } from './core/middlewares/error-handler.middleware';
+import { configureRoutes } from './core/routes';
 import { initializeSocket } from './core/socket/socket';
-import { logger } from './core/utils/logger';
-import { configureRoutes } from './routes';
+import { configuration } from './shared/config';
+import { redis_subscribe } from './shared/libraries/pubsub.service';
+import { logger } from './shared/libraries/utils/logger';
 
 connectDB().then(() => {
   const PORT = configuration().PORT;
@@ -23,6 +24,7 @@ connectDB().then(() => {
   app.use(urlencoded({ extended: true }));
   app.use(morgan('combined'));
 
+  // configure routes
   configureRoutes(app);
 
   // custom middlewares
@@ -30,6 +32,11 @@ connectDB().then(() => {
 
   // socket initialize
   initializeSocket(httpServer);
+
+  // example redis channel subscribing
+  redis_subscribe('example-channel', (message) => {
+    logger.info(`Received message on example-channel : ${message}`);
+  });
 
   httpServer.listen(PORT, () => {
     logger.success(`Server is running on port http://localhost:${PORT}`);

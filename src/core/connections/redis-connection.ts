@@ -1,6 +1,6 @@
 import { Redis, RedisOptions } from 'ioredis';
-import { configuration } from '../config';
-import { logger } from '../utils/logger';
+import { configuration } from '../../shared/config';
+import { logger } from '../../shared/libraries/utils/logger';
 
 /** Get Redis Client @private */
 const redisClient = (): RedisOptions => {

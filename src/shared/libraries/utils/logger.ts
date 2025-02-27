@@ -1,6 +1,8 @@
+import fs from 'fs';
+import path from 'path';
+
 /**
  * Enum for log levels.
- * @enum {string}
  */
 enum LogLevel {
   SUCCESS = 'SUCCESS',
@@ -11,10 +13,33 @@ enum LogLevel {
 }
 
 /**
- * Logger utility for logging messages with different levels and colors.
+ * Logger utility
+ * @description A utility for logging messages with different levels and colors.
+ * - Logs to console and file
+ * - Colors and emojis for different levels
+ * - Log directory is in the root of the project
+ * - Log file is named logs.log and is in a folder named after the current date
+ * - Logs are appended to the log file
  */
 export class logger {
   private static enabledLevels: Set<LogLevel> = new Set(Object.values(LogLevel));
+  private static logDirectory: string = path.join(process.cwd(), 'logs');
+
+  /**
+   * Initializes the logger by setting up the log directory and file.
+   */
+  private static initializeLogFile(): string {
+    const date = new Date();
+    const dateFolder = date.toISOString().split('T')[0]; // e.g., "2025-02-28"
+    const logFolderPath = path.join(this.logDirectory, dateFolder);
+
+    if (!fs.existsSync(logFolderPath)) {
+      fs.mkdirSync(logFolderPath, { recursive: true });
+    }
+
+    const logFilePath = path.join(logFolderPath, 'logs.log');
+    return logFilePath;
+  }
 
   /**
    * Gets the color code for a given log level.
@@ -72,7 +97,12 @@ export class logger {
     const emoji = this.getEmoji(level);
     const resetColor = '\x1b[0m';
     const timestamp = new Date().toISOString();
-    console.log(`${color}[${timestamp}] [${level}] ${emoji} ${message}${resetColor}`);
+    const logMessage = `[${timestamp}] [${level}] ${emoji} ${message}`;
+
+    console.log(`${color}${logMessage}${resetColor}`);
+
+    const logFilePath = this.initializeLogFile();
+    fs.appendFileSync(logFilePath, logMessage + '\n', 'utf8');
   }
 
   /**

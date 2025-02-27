@@ -12,7 +12,7 @@ This system will handle real-time data processing for:
 ✅ Scalability & Performance:
 
 - Use event-driven architecture to handle high traffic efficiently.
-- Implement queueing systems (e.g., BullMQ, RabbitMQ, or Kafka) for processing events asynchronously.
+- Implement queueing systems (Kafka) for processing events asynchronously.
 - Use database sharding & indexing for optimized MongoDB queries.
 
 ✅ Webhook Features:

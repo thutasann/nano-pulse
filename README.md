@@ -4,7 +4,7 @@ This system will handle real-time data processing for:
 
 - User Activity Tracking (logins, actions, interactions)
 - Notifications (instant alerts, scheduled updates)
-- Leaderboards (dynamic rankings based on real-time events)
+- Awards System (dynamic rankings based on real-time events)
 - Analytics System (detailed event monitoring and reports)
 
 ## Core Requirements:

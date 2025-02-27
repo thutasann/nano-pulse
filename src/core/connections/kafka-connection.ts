@@ -10,15 +10,15 @@ const config = configuration();
 const kafka = new Kafka({
   clientId: constants.kafka.clientId,
   brokers: [config.KAFKA_BROKER || 'localhost:9092'],
-  ssl: config.KAFKA_USE_SSL ? { rejectUnauthorized: false } : undefined,
-  sasl:
-    config.KAFKA_SASL_USERNAME && config.KAFKA_SASL_PASSWORD
-      ? {
-          mechanism: 'plain',
-          username: config.KAFKA_SASL_USERNAME,
-          password: config.KAFKA_SASL_PASSWORD,
-        }
-      : undefined,
+  // ssl: config.KAFKA_USE_SSL ? { rejectUnauthorized: false } : undefined,
+  // sasl:
+  //   config.KAFKA_SASL_USERNAME && config.KAFKA_SASL_PASSWORD
+  //     ? {
+  //         mechanism: 'plain',
+  //         username: config.KAFKA_SASL_USERNAME,
+  //         password: config.KAFKA_SASL_PASSWORD,
+  //       }
+  //     : undefined,
   connectionTimeout: 3000,
   requestTimeout: 5000,
   retry: {

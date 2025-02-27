@@ -10,6 +10,8 @@ import { configureRoutes } from './core/routes';
 import { initializeSocket } from './core/socket/socket';
 import { configuration } from './shared/config';
 import { constants } from './shared/constants/app.constants';
+import { initialize_consumer } from './shared/libraries/kafka/kafka-consumer.service';
+import { initialize_producer } from './shared/libraries/kafka/kafka-producer.service';
 import { redis_subscribe } from './shared/libraries/redis/pubsub.service';
 import { logger } from './shared/libraries/utils/logger';
 
@@ -39,8 +41,8 @@ connectDB().then(() => {
     logger.info(`Received message on example-channel : ${message}`);
   });
 
-  // initialize_producer();
-  // initialize_consumer(constants.kafka.topic);
+  initialize_producer();
+  initialize_consumer(constants.kafka.topic);
 
   httpServer.listen(PORT, () => {
     logger.success(`Server is running on port http://localhost:${PORT}`);

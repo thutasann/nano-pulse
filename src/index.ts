@@ -9,7 +9,8 @@ import { errorHandler } from './core/middlewares/error-handler.middleware';
 import { configureRoutes } from './core/routes';
 import { initializeSocket } from './core/socket/socket';
 import { configuration } from './shared/config';
-import { redis_subscribe } from './shared/libraries/pubsub.service';
+import { constants } from './shared/constants/app.constants';
+import { redis_subscribe } from './shared/libraries/redis/pubsub.service';
 import { logger } from './shared/libraries/utils/logger';
 
 connectDB().then(() => {
@@ -34,9 +35,12 @@ connectDB().then(() => {
   initializeSocket(httpServer);
 
   // example redis channel subscribing
-  redis_subscribe('example-channel', (message) => {
+  redis_subscribe(constants.redis.channelName, (message) => {
     logger.info(`Received message on example-channel : ${message}`);
   });
+
+  // initialize_producer();
+  // initialize_consumer(constants.kafka.topic);
 
   httpServer.listen(PORT, () => {
     logger.success(`Server is running on port http://localhost:${PORT}`);

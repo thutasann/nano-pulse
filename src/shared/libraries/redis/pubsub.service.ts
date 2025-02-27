@@ -1,5 +1,5 @@
 import IORedis from 'ioredis';
-import { getRedisUrl } from '../../core/connections/redis-connection';
+import { getRedisUrl } from '../../../core/connections/redis-connection';
 
 const redis_url = getRedisUrl();
 const pub_client = new IORedis(redis_url);

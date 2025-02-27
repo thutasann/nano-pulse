@@ -39,6 +39,28 @@ export class logger {
   }
 
   /**
+   * Gets the emoji for a given log level.
+   * @param {LogLevel} level - The log level.
+   * @returns {string} - The emoji.
+   */
+  private static getEmoji(level: LogLevel): string {
+    switch (level) {
+      case LogLevel.SUCCESS:
+        return '✅';
+      case LogLevel.ERROR:
+        return '❌';
+      case LogLevel.WARNING:
+        return '⚠️';
+      case LogLevel.INFO:
+        return 'ℹ️';
+      case LogLevel.DEBUG:
+        return '🐛';
+      default:
+        return '';
+    }
+  }
+
+  /**
    * Logs a message with the specified log level.
    * @param {LogLevel} level - The log level.
    * @param {string} message - The message to log.
@@ -47,9 +69,10 @@ export class logger {
     if (!this.enabledLevels.has(level)) return;
 
     const color = this.getColor(level);
+    const emoji = this.getEmoji(level);
     const resetColor = '\x1b[0m';
     const timestamp = new Date().toISOString();
-    console.log(`${color}[${timestamp}] [${level}] ${message}${resetColor}`);
+    console.log(`${color}[${timestamp}] [${level}] ${emoji} ${message}${resetColor}`);
   }
 
   /**

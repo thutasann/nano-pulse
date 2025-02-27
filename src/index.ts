@@ -1,19 +1,18 @@
 import { json, urlencoded } from 'body-parser';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
 import morgan from 'morgan';
+import { configuration } from './core/config';
 import { connectDB } from './core/database/mongo-connection';
 import { errorHandler } from './core/middlewares/error-handler.middleware';
 import { initializeSocket } from './core/socket/socket';
 import { logger } from './core/utils/logger';
 import { configureRoutes } from './routes';
-dotenv.config();
 
 connectDB().then(() => {
-  const PORT = process.env.PORT || 8080;
+  const PORT = configuration().PORT;
   const app: Application = express();
   const httpServer = createServer(app);
 

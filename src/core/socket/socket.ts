@@ -1,5 +1,7 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import { createAdapter } from 'socket.io-redis';
+import { getRedisUrl } from '../database/redis-connection';
 import { logger } from '../utils/logger';
 
 /**
@@ -19,6 +21,9 @@ export function initializeSocket(httpServer: HTTPServer) {
       upgradeTimeout: 30000,
       maxHttpBufferSize: 1e7,
     });
+
+    const redis_url = getRedisUrl();
+    io.adapter(createAdapter(redis_url));
 
     io.on('connection', (socket) => {
       logger.info(`New Client Connected : ${socket.id}`);

@@ -33,7 +33,7 @@ This system will handle real-time data processing for:
 - Node.js + Express.js + TypeScript for the backend
 - MongoDB (with Mongoose) for event storage
 - Redis for caching and queuing
-- BullMQ / RabbitMQ / Kafka for event queueing
+- Kafka for event queueing
 - WebSockets / Socket.io for real-time updates
 - Background Workers (to process heavy tasks asynchronously)
 - API Gateway & Load Balancer (for horizontal scaling)

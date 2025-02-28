@@ -13,15 +13,17 @@ const redisClient = (): RedisOptions => {
   throw new Error('Redis connection failed');
 };
 
-/**
- * Redis Instance
- * @example
- * redis.set('key', 'value')
- * redis.get('key')
- * redis.del('key')
- * redis.quit()
- */
-const redis = new Redis(redisClient());
+/** Redis Client for General Operations */
+export const redis = new Redis(redisClient());
+
+/** Redis Publish Client */
+export const redisPub = new Redis(redisClient());
+
+/** Redis Subscribe Client */
+export const redisSub = new Redis(redisClient());
+
+/** Redis Rate Limit Client */
+export const redisRateLimit = new Redis(redisClient());
 
 redis.on('error', (error) => {
   logger.error(`Redis connection error : ${error.message}`);
@@ -43,6 +45,14 @@ redis.on('reconnecting', () => {
   logger.warning('Redis attempting to reconnect...');
 });
 
+redisRateLimit.on('error', (error) => {
+  logger.error(`Redis rate limit connection error : ${error.message}`);
+});
+
+redisRateLimit.on('connect', () => {
+  logger.success('Redis rate limit connected successfully 🚀');
+});
+
 const gracefulShutdown = async () => {
   try {
     await redis.quit();
@@ -61,5 +71,3 @@ process.on('SIGINT', gracefulShutdown);
 export const getRedisUrl = (): string => {
   return `redis://${redisClient().host}:${redisClient().port}`;
 };
-
-export { redis };

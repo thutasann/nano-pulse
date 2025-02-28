@@ -1,9 +1,5 @@
-import IORedis from 'ioredis';
-import { getRedisUrl } from '../../../core/connections/redis-connection';
-
-const redis_url = getRedisUrl();
-const pub_client = new IORedis(redis_url);
-const sub_client = new IORedis(redis_url);
+import { redisPub, redisSub } from '../../../core/connections/redis-connection';
+import { logger } from '../utils/logger';
 
 /**
  * Redis Publish Event
@@ -14,7 +10,12 @@ const sub_client = new IORedis(redis_url);
  * @version 1.0.0
  */
 export async function redis_publish(channel: string, message: string): Promise<void> {
-  await pub_client.publish(channel, message);
+  try {
+    await redisPub.publish(channel, message);
+  } catch (error) {
+    logger.error(`Failed to publish message: ${error}`);
+    throw error;
+  }
 }
 
 /**
@@ -26,8 +27,8 @@ export async function redis_publish(channel: string, message: string): Promise<v
  * @version 1.0.0
  */
 export function redis_subscribe(channel: string, callback: (message: string) => void): void {
-  sub_client.subscribe(channel);
-  sub_client.on('message', (chan, message) => {
+  redisSub.subscribe(channel);
+  redisSub.on('message', (chan, message) => {
     if (chan === channel) {
       callback(message);
     }

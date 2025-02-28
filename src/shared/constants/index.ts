@@ -1,3 +1,5 @@
+import { apiConfig } from './api-config.constants';
+
 /**
  * Application Constants
  */
@@ -15,6 +17,7 @@ export const constants = {
     webhookQueue: 'webhook:events',
     webhookProcessingSet: 'webhook:processing',
   },
+  api: { ...apiConfig },
 } as const;
 
 export type AppConstants = typeof constants;

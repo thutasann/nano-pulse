@@ -77,7 +77,7 @@ export class logger {
       case LogLevel.WARNING:
         return '⚠️';
       case LogLevel.INFO:
-        return 'ℹ️';
+        return 'ℹ️ ';
       case LogLevel.DEBUG:
         return '🐛';
       default:

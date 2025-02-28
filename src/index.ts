@@ -28,9 +28,10 @@ connectDB().then(async () => {
       logger.info(`Received message on example-channel : ${message}`);
     });
 
+    // Start the HTTP server
     httpServer.listen(PORT, () => {
-      logger.success(`Server is running on port http://localhost:${PORT}`);
-      logger.info(`All Nano Pulse Services Initialized Successfully 🚀`);
+      logger.success(`Server is running on port http://localhost:${PORT}/api/v1`);
+      logger.success(`All Nano Pulse Services Initialized Successfully 🚀`);
     });
   } catch (error) {
     logger.error(`Failed to initialize services: ${error}`);

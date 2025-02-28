@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { WebhookDeliverySchema } from '../../core/zod-schemas/webhooks/webhook.schema';
+import { WebhookDeliverySchema } from '../../core/zod-schemas/webhooks/webhooks.schema';
 import { WebhookDelivery } from '../../shared/types/webhooks/webhooks.base.type';
 
 /**

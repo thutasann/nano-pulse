@@ -7,6 +7,10 @@ This system will handle real-time data processing for:
 - Awards System (dynamic rankings based on real-time events)
 - Analytics System (detailed event monitoring and reports)
 
+## System Architecture
+
+[This is the High Level System Architecture](./docs/system-architecture.md)
+
 ## Core Requirements:
 
 ✅ Scalability & Performance:

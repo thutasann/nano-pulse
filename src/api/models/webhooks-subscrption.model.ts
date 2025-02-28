@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { WebhookSubscriptionSchema } from '../../core/zod-schemas/webhooks/webhook.schema';
+import { WebhookSubscriptionSchema } from '../../core/zod-schemas/webhooks/webhooks.schema';
 import { zodToMongoose } from '../../shared/libraries/zod/zod-to-mongoose';
 import { WebhookSubscription } from '../../shared/types/webhooks/webhooks.base.type';
 
@@ -52,7 +52,7 @@ webhookSubscriptionSchema.pre('save', async function (next) {
   }
 });
 
-export const webhookSubscrptionModel = mongoose.model<WebhookSubscriptionDocument>(
+export const webhookSubscriptionModel = mongoose.model<WebhookSubscriptionDocument>(
   WebhookSubscriptionCollectionName,
   webhookSubscriptionSchema
 );

@@ -5,7 +5,7 @@ import {
   WebhookDeliverySchema,
   WebhookEventSchema,
   WebhookSubscriptionSchema,
-} from '../../../core/zod-schemas/webhooks/webhook.schema';
+} from '../../../core/zod-schemas/webhooks/webhooks.schema';
 
 /**
  * Retry Config Type Def

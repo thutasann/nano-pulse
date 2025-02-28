@@ -4,28 +4,29 @@ import { connectDB } from './core/connections/mongo-connection';
 import { initializeSocket } from './core/socket/socket';
 import { configuration } from './shared/config';
 import { constants } from './shared/constants';
-import { initialize_consumer } from './shared/libraries/kafka/kafka-consumer.service';
-import { initialize_producer } from './shared/libraries/kafka/kafka-producer.service';
 import { redis_subscribe } from './shared/libraries/redis/pubsub.service';
 import { logger } from './shared/libraries/utils/logger';
 
-connectDB().then(() => {
+connectDB().then(async () => {
   const PORT = configuration().PORT;
   const httpServer = createServer(app);
 
-  // socket initialize
-  initializeSocket(httpServer);
+  try {
+    initializeSocket(httpServer);
+    // await initialize_producer();
+    // await initialize_consumer(constants.kafka.topic);
+    // await initializeWebhookSystem();
 
-  // example redis channel subscribing
-  redis_subscribe(constants.redis.channelName, (message) => {
-    logger.info(`Received message on example-channel : ${message}`);
-  });
+    // Redis channel subscription
+    redis_subscribe(constants.redis.channelName, (message) => {
+      logger.info(`Received message on example-channel : ${message}`);
+    });
 
-  // kafka producer/consumer initialize
-  initialize_producer();
-  initialize_consumer(constants.kafka.topic);
-
-  httpServer.listen(PORT, () => {
-    logger.success(`Server is running on port http://localhost:${PORT}`);
-  });
+    httpServer.listen(PORT, () => {
+      logger.success(`Server is running on port http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    logger.error(`Failed to initialize services: ${error}`);
+    process.exit(1);
+  }
 });

@@ -1,8 +1,8 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { createAdapter } from 'socket.io-redis';
-import { logger } from '../../shared/libraries/utils/logger';
-import { getRedisUrl } from '../connections/redis-connection';
+import { logger } from '../../../shared/libraries/utils/logger';
+import { getRedisUrl } from '../../connections/redis-connection';
 
 /**
  * Initialize Sockets

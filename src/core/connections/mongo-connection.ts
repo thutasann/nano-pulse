@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 import { logger } from '../../shared/libraries/utils/logger';
 
 /**
- * MongoDB Connect
+ * MongoDB Connection
+ * @description This function is used to connect to the MongoDB database.
  */
 export async function connectDB() {
   try {

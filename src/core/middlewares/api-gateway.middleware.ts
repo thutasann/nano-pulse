@@ -57,35 +57,42 @@ export class ApiGateway {
         const allowed = await ApiGateway.checkRateLimit(key, validated);
         if (!allowed) {
           ResponseHandler.tooManyRequests(res, `Rate limit exceeded for IP: ${req.ip}`);
+          return;
         }
 
         next();
       } catch (error) {
         logger.error(`Rate Limit Error : ${error}`);
-        next();
+        return;
       }
     };
   }
 
   /**
    * ApiGateway Authenticate
+   * @description This middleware is used to authenticate the request.
    */
   static authenticate() {
     return async (req: any, res: any, next: any) => {
       const apiKey = req.headers['x-api-key'];
+      logger.info(`apiKey ==> ${apiKey}`);
 
       if (!apiKey) {
-        return ResponseHandler.unauthorized(res, 'API key required');
+        ResponseHandler.unauthorized(res, 'API key required');
+        return;
       }
 
       try {
         const isValid = await redisRateLimit.get(`apiKey:${apiKey}`);
         if (!isValid) {
-          return ResponseHandler.unauthorized(res, 'Invalid API key');
+          ResponseHandler.unauthorized(res, 'Invalid API key');
+          return;
         }
+
         next();
       } catch (error) {
-        return ResponseHandler.error(res, 'Authentication error', 500, error);
+        ResponseHandler.error(res, 'Authentication error', 500, error);
+        return;
       }
     };
   }

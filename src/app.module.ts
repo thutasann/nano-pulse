@@ -26,9 +26,6 @@ app.use(urlencoded({ extended: true }));
 // global rate limiting
 app.use(ApiGateway.rateLimit(apiConfig.rateLimits.general));
 
-// API Routes with specific rate limiting
-// app.use(apiConfig.routes.webhook, ApiGateway.rateLimit(apiConfig.rateLimits.webhook));
-
 // routes
 configureRoutes(app);
 

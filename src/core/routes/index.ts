@@ -1,5 +1,6 @@
 import { Application } from 'express';
 import { apiConfig } from '../../shared/constants/api-config.constants';
+import { ApiGateway } from '../middlewares/api-gateway.middleware';
 import webhooksRoute from './webhooks.route';
 import welcomeRoute from './welcome.route';
 
@@ -12,5 +13,5 @@ import welcomeRoute from './welcome.route';
  */
 export function configureRoutes(app: Application): void {
   app.use(apiConfig.routes.welcome, welcomeRoute);
-  app.use(apiConfig.routes.webhook, webhooksRoute);
+  app.use(apiConfig.routes.webhook, ApiGateway.authenticate(), webhooksRoute);
 }

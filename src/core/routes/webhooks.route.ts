@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { ResponseHandler } from '../../shared/libraries/utils/response-handler.util';
 
 /**
  * Webhooks Route
@@ -7,5 +8,9 @@ import { Router } from 'express';
  * @version 1.0.0
  */
 const webhooksRoute = Router();
+
+webhooksRoute.get('/', (req, res) => {
+  ResponseHandler.success(res, 'Hello From Webhooks Route');
+});
 
 export default webhooksRoute;

@@ -2,7 +2,7 @@ import { createServer } from 'http';
 import mongoose from 'mongoose';
 import app from './app.module';
 import { connectDB } from './core/connections/mongo-connection';
-import { initializeSocket } from './core/initializers/socket/socket.initializer';
+import { initialize_socket } from './core/initializers/socket/socket.initializer';
 import { WebhookInitializer } from './core/initializers/webhook/webhooks.initializer';
 import { configuration } from './shared/config';
 import { constants } from './shared/constants';
@@ -16,7 +16,7 @@ connectDB().then(async () => {
 
   try {
     // Initialize Core Services
-    initializeSocket(httpServer);
+    initialize_socket(httpServer);
     await initialize_producer();
 
     // Initialize Webhook System

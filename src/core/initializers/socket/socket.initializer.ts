@@ -12,7 +12,7 @@ import { getRedisUrl } from '../../connections/redis-connection';
  * @version 1.0.0
  * @since 2025-02-27
  */
-export function initializeSocket(httpServer: HTTPServer) {
+export function initialize_socket(httpServer: HTTPServer) {
   try {
     const io = new SocketIOServer(httpServer, {
       cors: {

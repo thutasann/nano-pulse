@@ -1,5 +1,5 @@
 import { Router } from 'express';
-
+import { ResponseHandler } from '../../shared/libraries/utils/response-handler.util';
 /**
  * Welcome Route
  * @description Welcome Route
@@ -9,7 +9,7 @@ import { Router } from 'express';
 const welcomeRoute = Router();
 
 welcomeRoute.get('/', (req, res) => {
-  res.send('Welcome to the Nano Pulse Webhook Service');
+  ResponseHandler.success(res, 'Welcome to the Nano Pulse Webhook Service');
 });
 
 export default welcomeRoute;

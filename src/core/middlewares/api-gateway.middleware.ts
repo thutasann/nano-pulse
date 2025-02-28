@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { logger } from '../../shared/libraries/utils/logger';
+import { ResponseHandler } from '../../shared/libraries/utils/response-handler.util';
 import { redisRateLimit } from '../connections/redis-connection';
 
 const RateLimitConfig = z.object({
@@ -11,6 +12,8 @@ const RateLimitConfig = z.object({
 /**
  * Api Gateway Middleware
  * @description This middleware is used to check the rate limit and authenticate the request.
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
  */
 export class ApiGateway {
   /**
@@ -29,7 +32,6 @@ export class ApiGateway {
 
       /** count the requests in current window */
       const requestCount = await redisRateLimit.zcard(key);
-
       if (requestCount >= config.max) return false;
 
       /** add current request */
@@ -54,8 +56,7 @@ export class ApiGateway {
 
         const allowed = await ApiGateway.checkRateLimit(key, validated);
         if (!allowed) {
-          logger.warning(`Rate Limit Exceeded for IP: ${req.ip}`);
-          return res.status(429).json({ error: 'Too many requests' });
+          ResponseHandler.tooManyRequests(res, `Rate limit exceeded for IP: ${req.ip}`);
         }
 
         next();
@@ -74,18 +75,17 @@ export class ApiGateway {
       const apiKey = req.headers['x-api-key'];
 
       if (!apiKey) {
-        return res.status(401).json({ error: 'API key required' });
+        return ResponseHandler.unauthorized(res, 'API key required');
       }
 
       try {
         const isValid = await redisRateLimit.get(`apiKey:${apiKey}`);
         if (!isValid) {
-          return res.status(401).json({ error: 'Invalid API key' });
+          return ResponseHandler.unauthorized(res, 'Invalid API key');
         }
         next();
       } catch (error) {
-        logger.error(`Authentication error : ${error}`);
-        next(error);
+        return ResponseHandler.error(res, 'Authentication error', 500, error);
       }
     };
   }

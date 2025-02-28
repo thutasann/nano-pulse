@@ -6,6 +6,9 @@ const config = configuration();
 
 /**
  * Kafka Client
+ * @description Kafka Client for the application
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
  */
 const kafka = new Kafka({
   clientId: constants.kafka.clientId,

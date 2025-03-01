@@ -82,6 +82,10 @@ export class ApiGateway {
         return;
       }
 
+      req.client = {
+        apiKey: apiKey,
+      };
+
       try {
         const isValid = await redisRateLimit.get(`apiKey:${apiKey}`);
         if (!isValid) {
@@ -95,5 +99,25 @@ export class ApiGateway {
         return;
       }
     };
+  }
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      /**
+       * Request Client
+       */
+      client?: {
+        /**
+         * Client ID
+         */
+        clientId: string;
+        /**
+         * API Key
+         */
+        apiKey: string;
+      };
+    }
   }
 }

@@ -72,6 +72,7 @@ export const WebhookEventSchema = z.object({
     .object({
       timestamp: z.date(),
       source: z.string(),
+      clientId: z.string(),
     })
     .and(z.record(z.string(), z.any())),
 });

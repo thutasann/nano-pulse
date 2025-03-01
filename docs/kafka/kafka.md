@@ -241,3 +241,12 @@ Would you like me to:
 2. Show how to set up multiple broker instances?
 3. Provide monitoring dashboard setup?
 4. Add more debugging commands?
+
+## 9. Creat the requird topics:
+
+```bash
+kafka-topics --create --if-not-exists --bootstrap-server localhost:9092 --topic webhook-events --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server localhost:9092 --topic webhook-retries --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server localhost:9092 --topic webhook-medium-priority --partitions 3 --replication-factor 1
+kafka-topics --create --if-not-exists --bootstrap-server localhost:9092 --topic webhook-low-priority --partitions 3 --replication-factor 1
+```

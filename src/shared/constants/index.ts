@@ -6,12 +6,11 @@ import { apiConfig } from './api-config.constants';
 export const constants = {
   kafka: {
     clientId: 'webhook-system',
-    groupId: 'webhook-consumers',
+    groupId: 'webhook-group',
     topic: 'webhook-events',
-    webhookRetry: 'webhook-retry',
-    highPriorityTopic: 'webhook-events-high',
-    mediumPriorityTopic: 'webhook-events-medium',
-    lowPriorityTopic: 'webhook-events-low',
+    webhookRetry: 'webhook-retries',
+    mediumPriorityTopic: 'webhook-medium-priority',
+    lowPriorityTopic: 'webhook-low-priority',
   },
   redis: {
     channelName: 'example-channel',

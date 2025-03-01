@@ -20,8 +20,8 @@ connectDB().then(async () => {
     await initialize_producer();
 
     // Initialize Webhook System
-    const webhookSystem = WebhookInitializer.getInstance();
-    await webhookSystem.initialize();
+    const webhookInitializer = WebhookInitializer.getInstance();
+    await webhookInitializer.initialize();
 
     // Redis channel subscription
     redis_subscribe(constants.redis.channelName, (message) => {
@@ -42,11 +42,15 @@ connectDB().then(async () => {
 process.on('SIGTERM', async () => {
   logger.info('SIGINT signal received. Shutting down gracefully...');
   await mongoose.connection.close();
+  const webhookInitializer = WebhookInitializer.getInstance();
+  await webhookInitializer.shutdown();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   logger.info('SIGINT signal received. Shutting down gracefully...');
   await mongoose.connection.close();
+  const webhookInitializer = WebhookInitializer.getInstance();
+  await webhookInitializer.shutdown();
   process.exit(0);
 });

@@ -1,6 +1,7 @@
 import { Kafka, logLevel } from 'kafkajs';
 import { configuration } from '../../shared/config';
 import { constants } from '../../shared/constants';
+import { logger } from '../../shared/libraries/utils/logger';
 
 const config = configuration();
 
@@ -22,13 +23,29 @@ const kafka = new Kafka({
   //         password: config.KAFKA_SASL_PASSWORD,
   //       }
   //     : undefined,
-  connectionTimeout: 3000,
-  requestTimeout: 5000,
+  connectionTimeout: 10000,
+  requestTimeout: 30000,
   retry: {
-    initialRetryTime: 100,
-    retries: 3,
+    initialRetryTime: 300,
+    retries: 10,
+    maxRetryTime: 30000,
+    factor: 1.5,
   },
-  logLevel: logLevel.INFO,
+  logLevel: logLevel.ERROR,
 });
 
-export default kafka;
+const verifyConnection = async () => {
+  const admin = kafka.admin();
+  try {
+    await admin.connect();
+    const topics = await admin.listTopics();
+    logger.info(`Kafka connection verified: ${topics}`);
+    await admin.disconnect();
+    return true;
+  } catch (error) {
+    logger.error(`Kafka connection verification failed: ${error}`);
+    return false;
+  }
+};
+
+export { kafka as default, verifyConnection };

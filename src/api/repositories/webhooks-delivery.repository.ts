@@ -22,6 +22,20 @@ export abstract class WebhookDeliveryRepository {
   }
 
   /**
+   * Find Delivery By ID
+   * @param deliveryId - delivery Id
+   * @returns Webhook Delivery
+   */
+  static async findDeliveryById(deliveryId: string) {
+    try {
+      return await WebhookDeliveryModel.findById(deliveryId).lean();
+    } catch (error) {
+      logger.error(`Failed to find delivery by ID: ${error}`);
+      throw error;
+    }
+  }
+
+  /**
    * Update Delivery Status
    * @param deliveryId - delivery Id
    * @param status - status

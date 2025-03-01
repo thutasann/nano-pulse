@@ -9,6 +9,9 @@ export const constants = {
     groupId: 'webhook-consumers',
     topic: 'webhook-events',
     webhookRetry: 'webhook-retry',
+    highPriorityTopic: 'webhook-events-high',
+    mediumPriorityTopic: 'webhook-events-medium',
+    lowPriorityTopic: 'webhook-events-low',
   },
   redis: {
     channelName: 'example-channel',

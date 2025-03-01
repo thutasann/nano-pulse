@@ -9,7 +9,7 @@ import { WebhookSubscription } from '../../shared/types/webhooks/webhooks.base.t
 /**
  * Webhook Subscrption Mongoose Document
  */
-interface WebhookSubscriptionDocument extends WebhookSubscription, Document {}
+export interface WebhookSubscriptionDocument extends WebhookSubscription, Document {}
 
 /**
  * Webhook Subscrption Collection Name

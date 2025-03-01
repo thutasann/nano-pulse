@@ -9,7 +9,7 @@ const producer = kafka.producer();
  * @author [thutasann](https://github.com/thutasann)
  * @version 1.0.0
  */
-export async function initialize_producer() {
+export async function initialize_kafka_producer() {
   await producer.connect();
   logger.success('Kafka Producer connected');
 }

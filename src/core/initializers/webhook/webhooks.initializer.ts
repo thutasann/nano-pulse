@@ -76,7 +76,7 @@ export class WebhookInitializer {
     });
 
     await redis.subscribe(this.WEBHOOK_QUEUE);
-    logger.info(`Webhook Event Bus Initialized`);
+    logger.success(`Webhook Event Bus Initialized`);
   }
 
   /**
@@ -115,7 +115,7 @@ export class WebhookInitializer {
       });
 
       await this.setupKafkaConsumer();
-      logger.info(`Webhook event processor initialized`);
+      logger.success(`Webhook event processor initialized`);
     } catch (error) {
       logger.error(`Failed to initialize event processor: ${error}`);
       throw error;

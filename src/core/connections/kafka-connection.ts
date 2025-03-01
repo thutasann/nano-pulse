@@ -34,12 +34,17 @@ const kafka = new Kafka({
   logLevel: logLevel.ERROR,
 });
 
+/**
+ * Verify Kafka Connection
+ * @description Verify the Kafka connection
+ * @returns {Promise<boolean>}
+ */
 const verifyConnection = async () => {
   const admin = kafka.admin();
   try {
     await admin.connect();
     const topics = await admin.listTopics();
-    logger.info(`Kafka connection verified: ${topics}`);
+    logger.success(`Kafka connection verified: ${topics}`);
     await admin.disconnect();
     return true;
   } catch (error) {

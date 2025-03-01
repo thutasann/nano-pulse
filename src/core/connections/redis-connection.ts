@@ -30,7 +30,7 @@ redis.on('error', (error) => {
 });
 
 redis.on('connect', () => {
-  logger.success('Redis connected successfully 🚀');
+  logger.success('Redis connected successfully');
 });
 
 redis.on('ready', () => {
@@ -50,7 +50,7 @@ redisRateLimit.on('error', (error) => {
 });
 
 redisRateLimit.on('connect', () => {
-  logger.success('Redis rate limit connected successfully 🚀');
+  logger.success('Redis rate limit connected successfully');
 });
 
 const gracefulShutdown = async () => {

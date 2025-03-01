@@ -12,13 +12,15 @@ const RateLimitConfig = z.object({
 /**
  * Api Gateway Middleware
  * @description This middleware is used to check the rate limit and authenticate the request.
+ * - Check the rate limit for the request
+ * - If the rate limit is exceeded, return a 429 error
+ * - Authenticate the request
  * @author [thutasann](https://github.com/thutasann)
  * @version 1.0.0
  */
 export class ApiGateway {
   /**
    * Check Rate Limit
-   * @private
    * @param key - key
    * @param config - rate limit config
    */
@@ -46,6 +48,9 @@ export class ApiGateway {
 
   /**
    * ApiGateway Rate Limit
+   * @description This middleware is used to rate limit the requests.
+   * - Check the rate limit for the request
+   * - If the rate limit is exceeded, return a 429 error
    * @param config - rate limit config
    */
   static rateLimit(config: z.infer<typeof RateLimitConfig>) {
@@ -74,7 +79,7 @@ export class ApiGateway {
    */
   static authenticate() {
     return async (req: any, res: any, next: any) => {
-      const apiKey = req.headers['x-api-key'];
+      const apiKey = req.headers['x-api-key']; // test-123
 
       if (!apiKey) {
         ResponseHandler.unauthorized(res, 'API key required');

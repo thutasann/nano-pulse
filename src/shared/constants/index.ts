@@ -1,5 +1,8 @@
 /**
  * Application Constants
+ * @description Application constants
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
  */
 export const constants = {
   /**
@@ -32,20 +35,11 @@ export const constants = {
     lowPriorityTopic: 'webhook-low-priority',
   },
   /**
-   * Redis Configuration
-   */
-  redis: {
-    /**
-     * Redis Channel Name
-     */
-    channelName: 'example-channel',
-  },
-  /**
    * Webhook Configuration
    */
   webhook: {
     /**
-     * Webhook Queue
+     * Webhook Events Queue
      */
     webhookQueue: 'webhook:events',
     /**
@@ -58,15 +52,15 @@ export const constants = {
    */
   webhookPriorityQueue: {
     /**
-     * High Priority Queue
+     * Webhook High Priority Queue
      */
     high: 'webhook:queue:high',
     /**
-     * Medium Priority Queue
+     * Webhook Medium Priority Queue
      */
     medium: 'webhook:queue:medium',
     /**
-     * Low Priority Queue
+     * Webhook Low Priority Queue
      */
     low: 'webhook:queue:low',
   },

@@ -42,9 +42,7 @@ export class WebhookInitializer {
    * Initialize only essential components
    */
   async initialize() {
-    if (this.isInitialized) {
-      return;
-    }
+    if (this.isInitialized) return;
 
     try {
       await this.initializeEventBus();

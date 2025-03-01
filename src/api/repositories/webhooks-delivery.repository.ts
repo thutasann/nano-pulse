@@ -65,6 +65,26 @@ export abstract class WebhookDeliveryRepository {
   }
 
   /**
+   * Update Delivery
+   * @param id - delivery Id
+   * @param update - update payload
+   * @returns Webhook Delivery
+   */
+  static async updateDelivery(
+    id: string,
+    update: {
+      status?: string;
+      statusCode?: number;
+      response?: any;
+      error?: string;
+      attemptCount?: number;
+      completedAt?: Date;
+    }
+  ) {
+    return await WebhookDeliveryModel.findByIdAndUpdate(id, update, { new: true });
+  }
+
+  /**
    * Find Failed Webhook Deliveries
    * @returns Webhook Deliveries
    */

@@ -5,9 +5,7 @@ import { connectDB } from './core/connections/mongo-connection';
 import { initialize_socket } from './core/initializers/socket/socket.initializer';
 import { WebhookInitializer } from './core/initializers/webhook/webhooks.initializer';
 import { configuration } from './shared/config';
-import { constants } from './shared/constants';
 import { initialize_kafka_producer } from './shared/libraries/kafka/kafka-producer.service';
-import { redis_subscribe } from './shared/libraries/redis/pubsub.service';
 import { logger } from './shared/libraries/utils/logger';
 
 /**
@@ -40,7 +38,8 @@ class NanoPulseApplication {
   }
 
   /**
-   * Initialize Database
+   * Initialize Mongodb Connection
+   * @description Initialize Mongodb connection
    */
   private async initializeDB(): Promise<void> {
     try {
@@ -53,17 +52,12 @@ class NanoPulseApplication {
   }
 
   /**
-   * Initialize Message Systems
+   * Initialize Message Systems (Kafka Producer)
+   * @description Initialize Kafka producer Connection
    */
   private async initializeMessageSystems(): Promise<void> {
     try {
       await initialize_kafka_producer();
-
-      setTimeout(() => {
-        redis_subscribe(constants.redis.channelName, (message) => {
-          logger.info(`Received message on example-channel: ${message}`);
-        });
-      }, 1000);
     } catch (error) {
       logger.error(`Message systems initialization failed: ${error}`);
       throw error;
@@ -72,6 +66,9 @@ class NanoPulseApplication {
 
   /**
    * Initialize Core Services
+   * - Initialize Mongodb Connection
+   * - Initialize Message Systems (Kafka Producer) and Initialize Socket Parallelly
+   * - Initialize Webhook Initializer after 2 seconds
    */
   private async bootstrap(): Promise<void> {
     const startTime = Date.now();
@@ -127,9 +124,9 @@ class NanoPulseApplication {
   /**
    * Start Application
    * @description Start the NanoPulse application
+   * - Setup graceful shutdown
    * - Bootstrap the application
    * - Start the HTTP server
-   * - Setup graceful shutdown
    */
   async main(): Promise<void> {
     try {
@@ -144,7 +141,7 @@ class NanoPulseApplication {
       });
 
       const bootTime = Date.now() - startTime;
-      logger.success(`Nano Pulse initialized 🚀 (${bootTime}ms)`);
+      logger.success(`Nano Pulse Application initialized 🚀 (${bootTime}ms)`);
     } catch (error) {
       logger.error(`Startup failed: ${error}`);
       process.exit(1);

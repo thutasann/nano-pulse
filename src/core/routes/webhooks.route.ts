@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { WebhooksController } from '../../api/controllers/webhooks.controller';
 import { ApiGateway } from '../../core/middlewares/api-gateway.middleware';
-import { ResponseHandler } from '../../shared/libraries/utils/response-handler.util';
 
 /**
  * Webhooks Route
@@ -13,10 +12,6 @@ const webhooksRoute = Router();
 const controller = new WebhooksController();
 
 webhooksRoute.use(ApiGateway.authenticate());
-
-webhooksRoute.get('/', (req, res) => {
-  ResponseHandler.success(res, 'Hello From Webhooks Route');
-});
 
 webhooksRoute.post(
   '/events',

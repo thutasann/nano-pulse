@@ -38,11 +38,13 @@ import { WebhookSubscriptionRepository } from '../repositories/webhooks-subscrip
 export class WebhooksService {
   private static instance: WebhooksService;
   private readonly HIGH_PRIORITY_QUEUE = constants.webhookPriorityQueue.high;
-  private readonly MEDIUM_PRIORITY_QUEUE = constants.webhookPriorityQueue.medium;
-  private readonly LOW_PRIORITY_QUEUE = constants.webhookPriorityQueue.low;
 
   private constructor() {}
 
+  /**
+   * Get Webhooks Service Instance
+   * @returns
+   */
   static getInstance(): WebhooksService {
     if (!WebhooksService.instance) {
       WebhooksService.instance = new WebhooksService();
@@ -54,7 +56,6 @@ export class WebhooksService {
    * Generate Signature
    * @param payload - payload
    * @param secret - secret
-   * @returns
    */
   private generateSignature<T>(payload: T, secret: string): string {
     const hmac = crypto.createHmac('sha256', secret);
@@ -113,17 +114,17 @@ export class WebhooksService {
         case 'HIGH':
           await redis.lpush(this.HIGH_PRIORITY_QUEUE, JSON.stringify(deliveryPayload));
           await redisPub.publish(constants.webhook.webhookQueue, JSON.stringify(deliveryPayload));
-          logger.info(`High priority webhook queued: ${delivery?._id}`);
+          logger.info(`High priority webhook queued to Redis: ${delivery?._id}`);
           break;
 
         case 'MEDIUM':
           await kafka_produce(constants.kafka.mediumPriorityTopic, JSON.stringify(deliveryPayload));
-          logger.info(`Medium priority webhook queued: ${delivery?._id}`);
+          logger.info(`Medium priority webhook queued to Kafka: ${delivery?._id}`);
           break;
 
         case 'LOW':
           await kafka_produce(constants.kafka.lowPriorityTopic, JSON.stringify(deliveryPayload));
-          logger.info(`Low priority webhook queued: ${delivery?._id}`);
+          logger.info(`Low priority webhook queued to Kafka: ${delivery?._id}`);
           break;
       }
 
@@ -134,6 +135,17 @@ export class WebhooksService {
       logger.error(`Failed to process subscription: ${error}`);
       throw error;
     }
+  }
+
+  /**
+   * Remove All Listeners
+   * @description Remove all listeners
+   */
+  private removeAllListeners(): void {
+    redisSub.removeAllListeners();
+    redisPub.removeAllListeners();
+    redis.removeAllListeners();
+    redisRateLimit.removeAllListeners();
   }
 
   /**
@@ -224,6 +236,14 @@ export class WebhooksService {
     }
   }
 
+  /**
+   * Get Webhook Stats
+   * @param subscriptionId - subscription id
+   * @description Get the webhook stats for a given subscription
+   * - Delivery stats
+   * - Realtime stats
+   * @returns
+   */
   async getWebhookStats(subscriptionId: string) {
     try {
       const [deliveryStats, realtimeStats] = await Promise.all([
@@ -255,23 +275,14 @@ export class WebhooksService {
     }
   }
 
-  public async shutdown(): Promise<void> {
-    // Wait for any pending operations to complete
+  /**
+   * Shutdown Webhooks Service
+   * @description Shutdown the webhooks service
+   * - Remove all listeners
+   * - Clear any timers or intervals
+   */
+  async shutdown(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Remove any event listeners
     this.removeAllListeners();
-
-    // Clear any timers or intervals if you have any
-    // clearInterval(this.retryInterval);
-    // clearTimeout(this.processingTimeout);
-  }
-
-  private removeAllListeners(): void {
-    // Remove any Redis pub/sub listeners
-    redisSub.removeAllListeners();
-    redisPub.removeAllListeners();
-    redis.removeAllListeners();
-    redisRateLimit.removeAllListeners();
   }
 }

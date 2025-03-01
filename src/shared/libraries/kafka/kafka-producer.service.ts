@@ -34,6 +34,17 @@ export async function kafka_produce(topic: string, message: string) {
     });
     logger.success(`[Kafka] Message Sent to topic ${topic} : ${message}`);
   } catch (error) {
-    logger.error(`[Kafka]Failed to send message to Kafka topic ${topic} : ${error} `);
+    logger.error(`[Kafka] Failed to send message to Kafka topic ${topic} : ${error} `);
   }
+}
+
+/**
+ * Shutdown Kafka Producer
+ * @description Shutdown Kafka producer
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
+ */
+export async function shutdown_kafka_producer() {
+  await producer.disconnect();
+  logger.success('Kafka Producer disconnected');
 }

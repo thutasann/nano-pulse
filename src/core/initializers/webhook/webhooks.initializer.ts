@@ -73,7 +73,7 @@ export class WebhookInitializer {
           const event = WebhookEventSchema.parse(JSON.parse(message));
           await kafka_produce(constants.kafka.topic, JSON.stringify(event));
         } catch (error) {
-          logger.error(`Failed to process webhook event: ${error}`);
+          logger.error(`[Initialize Event Bus] Failed to process webhook event: ${error}`);
         }
       }
     });

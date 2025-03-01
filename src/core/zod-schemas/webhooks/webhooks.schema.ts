@@ -65,9 +65,9 @@ export const WebhookDeliverySchema = z.object({
  */
 export const WebhookEventSchema = z.object({
   id: z.string(),
-  type: z.string(),
+  type: z.any(),
   payload: z.any(),
-  priority: z.string(),
+  priority: z.string().optional(),
   metadata: z
     .object({
       timestamp: z.date(),

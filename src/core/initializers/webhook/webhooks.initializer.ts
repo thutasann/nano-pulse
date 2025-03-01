@@ -1,4 +1,5 @@
-import { WebhookRepository } from '../../../api/repositories/webhooks.repository';
+import { WebhookDeliveryRepository } from '../../../api/repositories/webhooks-delivery.repository';
+import { WebhookSubscriptionRepository } from '../../../api/repositories/webhooks-subscription.repository';
 import { constants } from '../../../shared/constants';
 import { kafka_produce } from '../../../shared/libraries/kafka/kafka-producer.service';
 import { logger } from '../../../shared/libraries/utils/logger';
@@ -86,10 +87,10 @@ export class WebhookInitializer {
   private async startDeliveryWorker() {
     setInterval(async () => {
       try {
-        const failedDeliveries = await WebhookRepository.findFailedDeliveries();
+        const failedDeliveries = await WebhookDeliveryRepository.findFailedDeliveries();
 
         for (const delivery of failedDeliveries) {
-          const subscription = await WebhookRepository.findSubscriptionById(delivery.webhookId);
+          const subscription = await WebhookSubscriptionRepository.findSubscriptionById(delivery.webhookId);
           if (subscription && subscription.isActive) {
             // Re-queue for processing
             await kafka_produce(constants.kafka.webhookRetry, JSON.stringify(delivery));

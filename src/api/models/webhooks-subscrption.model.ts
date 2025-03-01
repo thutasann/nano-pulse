@@ -1,5 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { WebhookSubscriptionSchema } from '../../core/zod-schemas/webhooks/webhooks.schema';
+import {
+  WebhookSubscriptionPrioritySchema,
+  WebhookSubscriptionSchema,
+} from '../../core/zod-schemas/webhooks/webhooks.schema';
 import { zodToMongoose } from '../../shared/libraries/zod/zod-to-mongoose';
 import { WebhookSubscription } from '../../shared/types/webhooks/webhooks.base.type';
 
@@ -25,6 +28,7 @@ const webhookSubscriptionSchema = new Schema<WebhookSubscriptionDocument>(
     events: [{ type: String, required: true }],
     secret: { type: String, required: true },
     isActive: { type: Boolean, default: true },
+    priority: { type: String, enum: WebhookSubscriptionPrioritySchema._def.values, required: true },
     retryConfig: {
       type: zodToMongoose(WebhookSubscriptionSchema.shape.retryConfig),
       required: true,

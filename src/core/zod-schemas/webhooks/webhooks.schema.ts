@@ -20,6 +20,8 @@ export const RateLimitSchema = z.object({
   timeWindowMs: z.number().min(1000).max(60000).default(60000),
 });
 
+export const WebhookSubscriptionPrioritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH']);
+
 /**
  * Webhook Subscription Zod Schema
  * @description This schema is used to configure the webhook subscription.
@@ -30,6 +32,7 @@ export const WebhookSubscriptionSchema = z.object({
   description: z.string().max(500).optional(),
   url: z.string().url(),
   events: z.array(z.string()).min(1),
+  priority: WebhookSubscriptionPrioritySchema,
   secret: z.string().min(32),
   isActive: z.boolean().default(true),
   retryConfig: RetryConfigSchema,
@@ -64,6 +67,7 @@ export const WebhookEventSchema = z.object({
   id: z.string(),
   type: z.string(),
   payload: z.any(),
+  priority: z.string(),
   metadata: z
     .object({
       timestamp: z.date(),

@@ -5,7 +5,7 @@ import { WebhookDelivery } from '../../shared/types/webhooks/webhooks.base.type'
 /**
  * Webhook Delivery Mongoose Document
  */
-interface WebhookDeliveryDocument extends WebhookDelivery, Document {}
+export interface WebhookDeliveryDocument extends WebhookDelivery, Document {}
 
 /**
  * Webhook Delivery Collection Name

@@ -17,6 +17,11 @@ export const constants = {
     webhookQueue: 'webhook:events',
     webhookProcessingSet: 'webhook:processing',
   },
+  webhookPriorityQueue: {
+    high: 'webhook:queue:high',
+    medium: 'webhook:queue:medium',
+    low: 'webhook:queue:low',
+  },
   api: { ...apiConfig },
 } as const;
 

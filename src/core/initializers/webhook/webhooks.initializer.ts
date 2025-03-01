@@ -4,26 +4,29 @@ import { WebhookSubscriptionRepository } from '../../../api/repositories/webhook
 import { constants } from '../../../shared/constants';
 import { kafka_produce } from '../../../shared/libraries/kafka/kafka-producer.service';
 import { logger } from '../../../shared/libraries/utils/logger';
-import kafka, { verifyConnection } from '../../connections/kafka-connection';
+import kafka from '../../connections/kafka-connection';
 import { redis } from '../../connections/redis-connection';
 import { WebhookEventSchema } from '../../zod-schemas/webhooks/webhooks.schema';
 
+/**
+ * Webhook Initializer
+ * @description Initialize the webhook system
+ * - Only essential event bus is initialized immediately
+ * - Consumer initialization is delayed
+ * - Retry worker starts after consumer is ready
+ * - Webhook delivery worker starts after consumer is ready
+ * - Webhook subscription worker starts after consumer is ready
+ * - Webhook event processor starts after consumer is ready
+ * @author [thutasann](https://github.com/thutasann)
+ * @version 1.0.0
+ */
 export class WebhookInitializer {
   private static instance: WebhookInitializer;
   private readonly WEBHOOK_QUEUE = constants.webhook.webhookQueue;
-  private readonly WEBHOOK_PROCESSING_SET = constants.webhook.webhookProcessingSet;
-  private consumer: Consumer;
+  private consumer: Consumer | null = null;
+  private isInitialized = false;
 
-  private constructor() {
-    this.consumer = kafka.consumer({
-      groupId: constants.kafka.groupId || 'webhook-group',
-      maxWaitTimeInMs: 50,
-      retry: {
-        initialRetryTime: 100,
-        retries: 8,
-      },
-    });
-  }
+  private constructor() {}
 
   /**
    * Get Webhook Instance
@@ -36,23 +39,24 @@ export class WebhookInitializer {
   }
 
   /**
-   * Webhook Initialize
-   * - Initialize Redis pub/sub for webhook events
-   * - Initialize Kafka consumer for webhook processing
-   * - Start the webhook delivery worker
+   * Initialize only essential components
    */
   async initialize() {
+    if (this.isInitialized) {
+      return;
+    }
+
     try {
-      //? Initialize Redis pub/sub for webhook events
       await this.initializeEventBus();
 
-      //? Initialize Kafka consumer for webhook processing
-      await this.initializeEventProcessor();
+      setTimeout(() => {
+        this.initializeConsumer().catch((error) => {
+          logger.error(`Failed to initialize consumer: ${error}`);
+        });
+      }, 5000);
 
-      //? Start the webhook delivery worker
-      await this.startDeliveryWorker();
-
-      logger.success(`Webhook System Initialized successfully 🚀`);
+      this.isInitialized = true;
+      logger.success(`Webhook System Essential Services Initialized`);
     } catch (error) {
       logger.error(`Webhook System Initialization Failed: ${error}`);
       throw error;
@@ -60,7 +64,7 @@ export class WebhookInitializer {
   }
 
   /**
-   * Initialize Event Bus
+   * Initialize Event Bus - Essential for receiving webhook events
    */
   private async initializeEventBus() {
     redis.on('message', async (channel, message) => {
@@ -68,7 +72,6 @@ export class WebhookInitializer {
         try {
           const event = WebhookEventSchema.parse(JSON.parse(message));
           await kafka_produce(constants.kafka.topic, JSON.stringify(event));
-          logger.info(`Event published to Kafka: ${event.id}`);
         } catch (error) {
           logger.error(`Failed to process webhook event: ${error}`);
         }
@@ -76,96 +79,55 @@ export class WebhookInitializer {
     });
 
     await redis.subscribe(this.WEBHOOK_QUEUE);
-    logger.success(`Webhook Event Bus Initialized`);
   }
 
   /**
-   * Initialise Kafka Consumer for processing webhook events
+   * Lazy load consumer initialization
    */
-  private async initializeEventProcessor() {
-    try {
-      const isConnected = await verifyConnection();
-      if (!isConnected) {
-        throw new Error('Failed to verify Kafka connection');
-      }
+  private async initializeConsumer() {
+    if (this.consumer) {
+      return;
+    }
 
+    try {
       this.consumer = kafka.consumer({
         groupId: constants.kafka.groupId || 'webhook-group',
         maxWaitTimeInMs: 500,
-        sessionTimeout: 30000,
-        heartbeatInterval: 3000,
-        retry: {
-          initialRetryTime: 300,
-          retries: 10,
-          maxRetryTime: 30000,
-          factor: 1.5,
-        },
       });
 
       await this.consumer.connect();
-
       await this.consumer.subscribe({
-        topics: [
-          constants.kafka.topic,
-          constants.kafka.webhookRetry,
-          constants.kafka.mediumPriorityTopic,
-          constants.kafka.lowPriorityTopic,
-        ],
-        fromBeginning: true,
+        topics: [constants.kafka.topic], // Subscribe only to main topic initially
+        fromBeginning: false,
       });
 
-      await this.setupKafkaConsumer();
-      logger.success(`Webhook event processor initialized`);
+      await this.setupConsumer();
+
+      // Start retry worker after consumer is ready
+      this.startRetryWorker();
+
+      logger.success('Webhook consumer initialized');
     } catch (error) {
-      logger.error(`Failed to initialize event processor: ${error}`);
-      throw error;
+      logger.error(`Failed to initialize consumer: ${error}`);
+      this.consumer = null;
     }
   }
 
   /**
-   * Setup Kafka Consumer
-   * @todo: this will be implemented in the next step
-   * @todo: it wil handle the actual webhoook delivery logic
+   * Setup minimal consumer configuration
    */
-  private async setupKafkaConsumer() {
+  private async setupConsumer() {
+    if (!this.consumer) return;
+
     await this.consumer.run({
       autoCommit: true,
-      autoCommitInterval: 5000,
-      autoCommitThreshold: 100,
-      eachMessage: async ({ topic, partition, message }) => {
+      eachMessage: async ({ topic, message }) => {
         try {
           if (!message.value) return;
-
           const event = JSON.parse(message.value.toString());
-          logger.info(
-            `Processing message from topic ${topic} : ${JSON.stringify({
-              partition,
-              offset: message.offset,
-              eventId: event.id,
-            })}`
-          );
 
-          switch (topic) {
-            case constants.kafka.topic:
-              // Handle main webhook events
-              logger.info(`Processing webhook event: ${event.id}`);
-              break;
-
-            case constants.kafka.webhookRetry:
-              // Handle retry events
-              logger.info(`Processing retry event: ${event.id}`);
-              break;
-
-            case constants.kafka.mediumPriorityTopic:
-              // Handle medium priority events
-              logger.info(`Processing medium priority event: ${event.id}`);
-              break;
-
-            case constants.kafka.lowPriorityTopic:
-              // Handle low priority events
-              logger.info(`Processing low priority event: ${event.id}`);
-              break;
-          }
+          // Only log essential information
+          logger.info(`Processing webhook event: ${event.id}`);
 
           // Add your webhook processing logic here
         } catch (error) {
@@ -176,41 +138,37 @@ export class WebhookInitializer {
   }
 
   /**
-   * Start Delivery Worker that runs every minute
+   * Start retry worker - non-blocking
    */
-  private async startDeliveryWorker() {
+  private startRetryWorker() {
     setInterval(async () => {
       try {
         const failedDeliveries = await WebhookDeliveryRepository.findFailedDeliveries();
+        if (failedDeliveries.length === 0) return;
 
-        for (const delivery of failedDeliveries) {
-          const subscription = await WebhookSubscriptionRepository.findSubscriptionById(delivery.webhookId);
-          if (subscription && subscription.isActive) {
-            await kafka_produce(constants.kafka.webhookRetry, JSON.stringify(delivery));
-            logger.info(`Requeued failed delivery: ${delivery._id}`);
-          }
+        // Batch process failed deliveries
+        const retryDeliveries = await Promise.all(
+          failedDeliveries.map(async (delivery) => {
+            const subscription = await WebhookSubscriptionRepository.findSubscriptionById(delivery.webhookId);
+            return subscription?.isActive ? delivery : null;
+          })
+        );
+
+        const validDeliveries = retryDeliveries.filter(Boolean);
+        if (validDeliveries.length > 0) {
+          await kafka_produce(constants.kafka.webhookRetry, JSON.stringify(validDeliveries));
         }
       } catch (error) {
-        logger.error(`Webhook delivery worker error: ${error}`);
+        logger.error(`Retry worker error: ${error}`);
       }
     }, 60000);
   }
 
-  async checkHealth(): Promise<boolean> {
-    try {
-      return await verifyConnection();
-    } catch (error) {
-      logger.error(`Health check failed: ${error}`);
-      return false;
-    }
-  }
-
   async shutdown() {
-    try {
+    if (this.consumer) {
       await this.consumer.disconnect();
-      logger.info('Webhook system shutdown complete');
-    } catch (error) {
-      logger.error(`Error during webhook system shutdown: ${error}`);
+      this.consumer = null;
     }
+    this.isInitialized = false;
   }
 }

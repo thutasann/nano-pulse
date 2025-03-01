@@ -26,11 +26,7 @@ class NanoPulseApplication {
   private httpServer = createServer(app);
   private webhookInitializer = WebhookInitializer.getInstance();
 
-  private constructor() {
-    this.httpServer.listen(this.PORT, () => {
-      logger.success(`Server is running on port http://localhost:${this.PORT}/api/v1`);
-    });
-  }
+  private constructor() {}
 
   /**
    * Get NanoPulse Application Instance
@@ -142,6 +138,10 @@ class NanoPulseApplication {
       this.setupGracefulShutdown();
 
       await this.bootstrap();
+
+      this.httpServer.listen(this.PORT, () => {
+        logger.success(`Server is running on port http://localhost:${this.PORT}/api/v1`);
+      });
 
       const bootTime = Date.now() - startTime;
       logger.success(`Nano Pulse initialized 🚀 (${bootTime}ms)`);

@@ -12,13 +12,14 @@ import { ResponseHandler } from '../../shared/libraries/utils/response-handler.u
 const webhooksRoute = Router();
 const controller = new WebhooksController();
 
+webhooksRoute.use(ApiGateway.authenticate());
+
 webhooksRoute.get('/', (req, res) => {
   ResponseHandler.success(res, 'Hello From Webhooks Route');
 });
 
 webhooksRoute.post(
   '/events',
-  ApiGateway.authenticate(),
   ApiGateway.rateLimit({
     windowMs: 60000,
     max: 1000,
@@ -27,11 +28,10 @@ webhooksRoute.post(
   controller.triggerEvent
 );
 
-webhooksRoute.get('/stats/:subscriptionId', ApiGateway.authenticate(), controller.getStats.bind(controller));
+webhooksRoute.get('/stats/:subscriptionId', controller.getStats);
 
 webhooksRoute.post(
   '/retry/:deliveryId',
-  ApiGateway.authenticate(),
   ApiGateway.rateLimit({
     windowMs: 60000,
     max: 50,

@@ -27,6 +27,7 @@ export class WebhooksController {
           source: 'api',
         },
       });
+      console.log('result', result);
       ResponseHandler.success(res, result);
     } catch (error) {
       ResponseHandler.error(res, 'Failed to trigger event', 500, error);

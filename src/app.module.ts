@@ -4,7 +4,6 @@ import express, { Application } from 'express';
 import helmet from 'helmet';
 import { ApiGateway } from './core/middlewares/api-gateway.middleware';
 import { errorHandler } from './core/middlewares/error-handler.middleware';
-import { httpLogger } from './core/middlewares/http-logger.middleware';
 import { configureRoutes } from './core/routes';
 import { apiConfig } from './shared/constants/api-config.constants';
 
@@ -17,7 +16,7 @@ import { apiConfig } from './shared/constants/api-config.constants';
 const app: Application = express();
 
 // middlewares
-app.use(httpLogger);
+// app.use(httpLogger);
 app.use(helmet());
 app.use(cors());
 app.use(json());

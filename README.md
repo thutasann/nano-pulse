@@ -11,15 +11,17 @@ This system will handle real-time data processing for:
 
 [This is the High Level System Architecture](./docs/system-architecture.md)
 
+---
+
 ## Core Requirements:
 
-✅ Scalability & Performance:
+### Scalability & Performance:
 
 - Use event-driven architecture to handle high traffic efficiently.
 - Implement queueing systems (Kafka) for processing events asynchronously.
 - Use database sharding & indexing for optimized MongoDB queries.
 
-✅ Webhook Features:
+### Webhook Features:
 
 - Event Subscription System (allow clients to subscribe to specific events)
 - Webhook Delivery with Retry Mechanism (exponential backoff & dead-letter queue)
@@ -32,7 +34,7 @@ This system will handle real-time data processing for:
 - Custom Event Processing Rules (allow users to define business logic for webhooks)
 - Batch Processing (group multiple events into a single webhook)
 
-✅ Tech Stack & Architecture:
+### Tech Stack & Architecture:
 
 - Node.js + Express.js + TypeScript for the backend
 - MongoDB (with Mongoose) for event storage
@@ -43,14 +45,14 @@ This system will handle real-time data processing for:
 - API Gateway & Load Balancer (for horizontal scaling)
 - Monitoring & Logging: Prometheus, Grafana, ELK Stack
 
-✅ Performance Optimizations:
+### Performance Optimizations:
 
 - Optimized database indexing & query strategies
 - Batch inserts & bulk updates
 - Efficient event deduplication & processing pipelines
 - Microservices-friendly architecture for future scalability
 
-✅ Security & Reliability:
+### Security & Reliability:
 
 - HMAC Signature Verification to prevent webhook tampering
 - JWT Authentication & Role-based Access Control (RBAC)

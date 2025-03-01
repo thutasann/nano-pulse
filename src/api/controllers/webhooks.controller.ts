@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { logger } from '../../shared/libraries/utils/logger';
 import { ResponseHandler } from '../../shared/libraries/utils/response-handler.util';
 import { WebhooksService } from '../services/webhooks.service';
 
@@ -27,7 +28,7 @@ export class WebhooksController {
           source: 'api',
         },
       });
-      console.log('result', result);
+      logger.info(`trigger Event Result : ${JSON.stringify(result)}`);
       ResponseHandler.success(res, result);
     } catch (error) {
       ResponseHandler.error(res, 'Failed to trigger event', 500, error);

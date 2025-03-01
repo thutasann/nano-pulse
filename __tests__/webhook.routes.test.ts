@@ -1,37 +1,67 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
+import { WebhooksService } from '../src/api/services/webhooks.service';
 import app from '../src/app.module';
 import { redis, redisPub, redisRateLimit, redisSub } from '../src/core/connections/redis-connection';
 import { configuration } from '../src/shared/config';
 import { WebhookEvent } from '../src/shared/types/webhooks/webhooks.base.type';
+import { mockSubscriptions } from './utils/mock-subscriptions';
 
 describe('Webhook Routes Integration Tests', () => {
   const API_KEY = 'test-123';
   let deliveryId: string;
 
   beforeAll(async () => {
-    redis.removeAllListeners();
-    redisPub.removeAllListeners();
-    redisSub.removeAllListeners();
-    redisRateLimit.removeAllListeners();
+    await Promise.all([
+      new Promise((resolve) => redis.once('ready', resolve)),
+      new Promise((resolve) => redisPub.once('ready', resolve)),
+      new Promise((resolve) => redisSub.once('ready', resolve)),
+      new Promise((resolve) => redisRateLimit.once('ready', resolve)),
+    ]);
 
     await mongoose.connect(configuration().MONGO_URI || '');
+
+    await mockSubscriptions();
+  });
+
+  afterEach(async () => {
+    // Wait for any pending webhook processing to complete
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   afterAll(async () => {
+    // Clean up
+    try {
+      // Wait for any pending operations
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Stop the webhook service
+      const webhookService = WebhooksService.getInstance();
+      await webhookService.shutdown(); // Add this method to your WebhooksService
+
+      // await mongoose.connection.dropDatabase();
+    } catch (error) {
+      console.error('Error during cleanup:', error);
+    }
+
+    // Close connections with proper waiting
     await Promise.all([
       mongoose.connection.close(),
       new Promise((resolve) => {
-        redis.quit().finally(() => resolve(true));
+        redis.disconnect();
+        redis.on('end', resolve);
       }),
       new Promise((resolve) => {
-        redisPub.quit().finally(() => resolve(true));
+        redisPub.disconnect();
+        redisPub.on('end', resolve);
       }),
       new Promise((resolve) => {
-        redisSub.quit().finally(() => resolve(true));
+        redisSub.disconnect();
+        redisSub.on('end', resolve);
       }),
       new Promise((resolve) => {
-        redisRateLimit.quit().finally(() => resolve(true));
+        redisRateLimit.disconnect();
+        redisRateLimit.on('end', resolve);
       }),
     ]);
   });
@@ -105,18 +135,15 @@ describe('Webhook Routes Integration Tests', () => {
     //   });
     // });
 
-    // test('should handle rate limiting', async () => {
-    //   const requests = Array(1100)
-    //     .fill(eventPayloads[0])
-    //     .map((payload) => request(app).post('/api/v1/webhooks/events').set('x-api-key', API_KEY).send(payload));
+    it('should process webhook event', async () => {
+      const response = await request(app)
+        .post('/api/v1/webhooks/events')
+        .set('x-api-key', API_KEY)
+        .send(eventPayloads[0]);
 
-    //   const responses = await Promise.all(requests);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    //   const successCount = responses.filter((r) => r.status === 200).length;
-    //   const rateLimitedCount = responses.filter((r) => r.status === 429).length;
-
-    //   expect(successCount).toBeLessThanOrEqual(1000);
-    //   expect(rateLimitedCount).toBeGreaterThan(0);
-    // });
+      expect(response.status).toBe(200);
+    });
   });
 });

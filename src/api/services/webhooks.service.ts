@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { redis, redisPub } from '../../core/connections/redis-connection';
+import { redis, redisPub, redisRateLimit, redisSub } from '../../core/connections/redis-connection';
 import { WebhookEventSchema } from '../../core/zod-schemas/webhooks/webhooks.schema';
 import { constants } from '../../shared/constants';
 import { kafka_produce } from '../../shared/libraries/kafka/kafka-producer.service';
@@ -109,7 +109,6 @@ export class WebhooksService {
         attempts: 0,
       };
 
-      // Route based on priority
       switch (subscription.priority) {
         case 'HIGH':
           await redis.lpush(this.HIGH_PRIORITY_QUEUE, JSON.stringify(deliveryPayload));
@@ -144,7 +143,6 @@ export class WebhooksService {
   async processWebhookEvent(event: WebhookEvent) {
     try {
       const validatedEvent = WebhookEventSchema.parse(event);
-      const { priority = 'LOW' } = validatedEvent;
 
       const subscriptions = await WebhookSubscriptionRepository.findActiveSubscriptionsByEventType(validatedEvent.type);
       logger.info(`Found ${subscriptions.length} active subscriptions for event ${validatedEvent.type}`);
@@ -255,5 +253,25 @@ export class WebhooksService {
       logger.error(`Failed to get webhook stats: ${error}`);
       throw error;
     }
+  }
+
+  public async shutdown(): Promise<void> {
+    // Wait for any pending operations to complete
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Remove any event listeners
+    this.removeAllListeners();
+
+    // Clear any timers or intervals if you have any
+    // clearInterval(this.retryInterval);
+    // clearTimeout(this.processingTimeout);
+  }
+
+  private removeAllListeners(): void {
+    // Remove any Redis pub/sub listeners
+    redisSub.removeAllListeners();
+    redisPub.removeAllListeners();
+    redis.removeAllListeners();
+    redisRateLimit.removeAllListeners();
   }
 }

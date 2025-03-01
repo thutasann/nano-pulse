@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { logger } from '../../shared/libraries/utils/logger';
 import { WebhookSubscription } from '../../shared/types/webhooks/webhooks.base.type';
 import { webhookSubscriptionModel } from '../models/webhooks-subscrption.model';
@@ -9,12 +8,13 @@ export class WebhookSubscriptionRepository {
    * @param data - Webhook Subscription Data
    * @returns Webhook Subscription
    */
-  static async createSubscrption(data: Omit<WebhookSubscription, 'createdAt' | 'updatedAt'>) {
+  static async createSubscription(data: Omit<WebhookSubscription, 'createdAt' | 'updatedAt'>) {
     try {
-      return await webhookSubscriptionModel.create({
+      const result = await webhookSubscriptionModel.create({
         ...data,
-        _id: new Types.ObjectId(),
       });
+      logger.success(`Created webhook subscription: ${result.name}`);
+      return result;
     } catch (error) {
       logger.error(`Failed to create subscription : ${error}`);
       throw error;
@@ -47,7 +47,7 @@ export class WebhookSubscriptionRepository {
       const subscriptions = await webhookSubscriptionModel
         .find({
           isActive: true,
-          events: { $in: [eventType] }, // Using $in operator for array matching
+          events: { $in: [eventType] },
         })
         .lean();
 

@@ -75,7 +75,6 @@ export class ApiGateway {
   static authenticate() {
     return async (req: any, res: any, next: any) => {
       const apiKey = req.headers['x-api-key'];
-      logger.info(`apiKey ==> ${apiKey}`);
 
       if (!apiKey) {
         ResponseHandler.unauthorized(res, 'API key required');

@@ -16,7 +16,9 @@ import { WebhookDeliveryRepository } from '../repositories/webhooks-delivery.rep
  */
 export class WebhookConsumerService {
   private static instance: WebhookConsumerService;
+  /** High Priority Queue for Redis */
   private readonly HIGH_PRIORITY_QUEUE = constants.webhookPriorityQueue.high;
+  private readonly REDIS_QUEUE = constants.redis.redisQueue;
 
   private constructor() {
     this.initializeConsumers();
@@ -49,7 +51,7 @@ export class WebhookConsumerService {
    * - Subscribe to Redis pub/sub for High priority webhooks
    */
   private async initializeRedisConsumer() {
-    redisSub.subscribe(constants.webhook.webhookQueue, async (err) => {
+    redisSub.subscribe(this.REDIS_QUEUE, async (err) => {
       if (err) {
         logger.error(`[Webhook Consumer Service] Redis subscription error : ${err}`);
         return;
@@ -57,7 +59,7 @@ export class WebhookConsumerService {
     });
 
     redisSub.on('message', async (channel, message) => {
-      if (channel === constants.webhook.webhookQueue) {
+      if (channel === this.REDIS_QUEUE) {
         const payload: DeliveryPayload = JSON.parse(message);
         logger.info(`[Webhook Consumer] Received message : ${payload.id}  from Redis`);
         await this.processDelivery(payload);
@@ -74,7 +76,7 @@ export class WebhookConsumerService {
     const consumer = kafka_consumer;
 
     await consumer.subscribe({
-      topics: [constants.kafka.mediumPriorityTopic, constants.kafka.lowPriorityTopic],
+      topics: [constants.webhookPriorityQueue.medium, constants.webhookPriorityQueue.low],
       fromBeginning: true,
     });
 

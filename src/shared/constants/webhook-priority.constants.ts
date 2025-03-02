@@ -1,17 +1,20 @@
 /**
  * Webhook Priority Constants
+ * - High Priority: Redis
+ * - Medium Priority: Kafka
+ * - Low Priority: Kafka
  */
 export const webhokPriorityConstants = {
   /**
-   * Webhook High Priority Queue
+   * Redis High Priority Queue
    */
   high: 'webhook:queue:high',
   /**
-   * Webhook Medium Priority Queue
+   * Kafka Medium Priority Topic
    */
-  medium: 'webhook:queue:medium',
+  medium: 'webhook-medium-priority',
   /**
-   * Webhook Low Priority Queue
+   * Kafka Low Priority Topic
    */
-  low: 'webhook:queue:low',
+  low: 'webhook-low-priority',
 };

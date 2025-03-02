@@ -10,23 +10,4 @@ export const kafkaConstants = {
    * Kafka Consumer Group ID
    */
   consumerGroupId: 'webhook-consumer-group',
-  /**
-   * Kafka High Priority Topic
-   */
-  highPriorityTopic: 'webhook-high-priority',
-  /**
-   * Kafka Retry Topic
-   */
-  /**
-   * Kafka Medium Priority Topic
-   */
-  mediumPriorityTopic: 'webhook-medium-priority',
-  /**
-   * Kafka Low Priority Topic
-   */
-  lowPriorityTopic: 'webhook-low-priority',
-  /**
-   * Kafka Webhook Retry Topic
-   */
-  webhookRetry: 'webhook-retries',
 };

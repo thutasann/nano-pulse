@@ -1,7 +1,7 @@
 import { apiConfig } from './api-config.constants';
 import { kafkaConstants } from './kafka.constants';
+import { redisConstants } from './redis.constants';
 import { webhokPriorityConstants } from './webhook-priority.constants';
-import { webhookConstants } from './webhook.constants';
 
 /**
  * Application Constants
@@ -17,7 +17,7 @@ export const constants = {
   /**
    * Webhook Configuration
    */
-  webhook: { ...webhookConstants },
+  redis: { ...redisConstants },
   /**
    * Webhook Priority Queue
    */

@@ -37,7 +37,9 @@ import { WebhookSubscriptionRepository } from '../repositories/webhooks-subscrip
  */
 export class WebhooksService {
   private static instance: WebhooksService;
+  /** High Priority Queue for Redis */
   private readonly HIGH_PRIORITY_QUEUE = constants.webhookPriorityQueue.high;
+  private readonly REDIS_QUEUE = constants.redis.redisQueue;
 
   private constructor() {}
 
@@ -113,17 +115,17 @@ export class WebhooksService {
       switch (subscription.priority) {
         case 'HIGH':
           await redis.lpush(this.HIGH_PRIORITY_QUEUE, JSON.stringify(deliveryPayload));
-          await redisPub.publish(constants.webhook.webhookQueue, JSON.stringify(deliveryPayload));
+          await redisPub.publish(this.REDIS_QUEUE, JSON.stringify(deliveryPayload));
           logger.info(`High priority webhook queued to Redis: ${delivery?._id}`);
           break;
 
         case 'MEDIUM':
-          await kafka_produce(constants.kafka.mediumPriorityTopic, JSON.stringify(deliveryPayload));
+          await kafka_produce(constants.webhookPriorityQueue.medium, JSON.stringify(deliveryPayload));
           logger.info(`Medium priority webhook queued to Kafka: ${delivery?._id}`);
           break;
 
         case 'LOW':
-          await kafka_produce(constants.kafka.lowPriorityTopic, JSON.stringify(deliveryPayload));
+          await kafka_produce(constants.webhookPriorityQueue.low, JSON.stringify(deliveryPayload));
           logger.info(`Low priority webhook queued to Kafka: ${delivery?._id}`);
           break;
       }

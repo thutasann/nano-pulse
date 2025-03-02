@@ -8,14 +8,6 @@ export const apiConfig = {
    */
   rateLimits: {
     /**
-     * Webhook Rate Limit
-     */
-    webhook: {
-      windowMs: 60000,
-      max: 100,
-      keyPrefix: 'rate-limit:webhook:',
-    },
-    /**
      * General Rate Limit
      */
     general: {

@@ -1,8 +1,10 @@
 import { Application } from 'express';
-import { apiConfig } from '../../shared/constants/api-config.constants';
+import { constants } from '../../shared/constants';
 import { ApiGateway } from '../middlewares/api-gateway.middleware';
 import webhooksRoute from './webhooks.route';
 import welcomeRoute from './welcome.route';
+
+const apiConfig = constants.api;
 
 /**
  * Configure Routes

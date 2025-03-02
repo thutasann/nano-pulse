@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import { ApiGateway } from './core/middlewares/api-gateway.middleware';
 import { errorHandler } from './core/middlewares/error-handler.middleware';
 import { configureRoutes } from './core/routes';
-import { apiConfig } from './shared/constants/api-config.constants';
+import { constants } from './shared/constants';
 
 /**
  * Nano Pulse Express Application
@@ -17,7 +17,7 @@ const app: Application = express();
 app.use(helmet());
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use(ApiGateway.rateLimit(apiConfig.rateLimits.general));
+app.use(ApiGateway.rateLimit(constants.api.rateLimits.general));
 
 configureRoutes(app);
 

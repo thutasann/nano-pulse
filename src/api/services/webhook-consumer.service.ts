@@ -59,6 +59,7 @@ export class WebhookConsumerService {
     redisSub.on('message', async (channel, message) => {
       if (channel === constants.webhook.webhookQueue) {
         const payload: DeliveryPayload = JSON.parse(message);
+        logger.info(`[Webhook Consumer] Received message : ${payload.id}  from Redis`);
         await this.processDelivery(payload);
       }
     });

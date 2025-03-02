@@ -11,10 +11,6 @@ export const kafkaConstants = {
    */
   consumerGroupId: 'webhook-consumer-group',
   /**
-   * Kafka Topic
-   */
-  topic: 'webhook-events',
-  /**
    * Kafka High Priority Topic
    */
   highPriorityTopic: 'webhook-high-priority',

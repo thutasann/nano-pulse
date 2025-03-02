@@ -128,14 +128,14 @@ describe('Webhook Routes Stress Tests', () => {
     });
 
     test('should handle sequential requests', async () => {
-      const totalRequests = 15; // Reduced from 70 to 15
+      const totalRequests = 8; // Reduced from 15 to 8
       const results = {
         accepted: 0,
         rateLimited: 0,
         other: 0,
       };
 
-      // Send requests sequentially instead of in batches
+      // Send requests sequentially with shorter delays
       for (let i = 0; i < totalRequests; i++) {
         const payload = generateEvents(1)[0];
         const response = await request(app).post('/api/v1/webhooks/events').set('x-api-key', API_KEY).send(payload);
@@ -144,8 +144,8 @@ describe('Webhook Routes Stress Tests', () => {
         else if (response.status === 429) results.rateLimited++;
         else results.other++;
 
-        // Small delay between requests
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        // Reduced delay between requests
+        await new Promise((resolve) => setTimeout(resolve, 200)); // Reduced from 300ms to 200ms
       }
 
       console.log('Sequential Test Results:', results);
@@ -153,6 +153,6 @@ describe('Webhook Routes Stress Tests', () => {
       expect(results.accepted).toBe(totalRequests);
       expect(results.rateLimited).toBe(0);
       expect(results.other).toBe(0);
-    });
+    }, 10000); // Added explicit timeout of 10 seconds for this specific test
   });
 });

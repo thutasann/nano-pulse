@@ -4,7 +4,6 @@ import { WebhookConsumerService } from './api/services/webhook-consumer.service'
 import app from './app.module';
 import { connectDB } from './core/connections/mongo-connection';
 import { initialize_socket } from './core/initializers/socket/socket.initializer';
-import { WebhookInitializer } from './core/initializers/webhook/webhooks.initializer';
 import { configuration } from './shared/config';
 import { initialize_kafka_producer, shutdown_kafka_producer } from './shared/libraries/kafka/kafka-producer.service';
 import { logger } from './shared/libraries/utils/logger';
@@ -23,7 +22,6 @@ class NanoPulseApplication {
   private static instance: NanoPulseApplication;
   private readonly PORT = configuration().PORT;
   private httpServer = createServer(app);
-  private webhookInitializer = WebhookInitializer.getInstance();
 
   private constructor() {}
 
@@ -110,12 +108,6 @@ class NanoPulseApplication {
       await Promise.all([this.initializeKafkaProducer(), initialize_socket(this.httpServer)]);
 
       WebhookConsumerService.getInstance();
-
-      setTimeout(() => {
-        this.webhookInitializer.initialize().catch((error) => {
-          logger.error(`Webhook initialization failed: ${error}`);
-        });
-      }, 2000);
 
       const initTime = Date.now() - startTime;
       logger.success(`Core services initialized (${initTime}ms)`);

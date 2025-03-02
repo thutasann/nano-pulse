@@ -250,3 +250,14 @@ kafka-topics --create --if-not-exists --bootstrap-server localhost:9092 --topic 
 kafka-topics --create --if-not-exists --bootstrap-server localhost:9092 --topic webhook-medium-priority --partitions 3 --replication-factor 1
 kafka-topics --create --if-not-exists --bootstrap-server localhost:9092 --topic webhook-low-priority --partitions 3 --replication-factor 1
 ```
+
+## 10. Delete Single topic
+
+```bash
+# Delete a single topic
+kafka-topics --bootstrap-server localhost:9092 --delete --topic TOPIC_NAME
+
+# For your specific webhook topics, you can delete them with:
+kafka-topics --bootstrap-server localhost:9092 --delete --topic webhook:queue:medium
+kafka-topics --bootstrap-server localhost:9092 --delete --topic webhook:queue:low
+```

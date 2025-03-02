@@ -14,7 +14,10 @@
     "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:stress": "jest webhook.routes.stress.test.ts --runInBand"
+    "test:stress": "jest webhook.routes.stress.test.ts --runInBand",
+    "kafka:create-topics": "chmod +x ./kafka_topics_create.sh && ./kafka_topics_create.sh",
+    "kafka:list-topics": "kafka-topics --list --bootstrap-server localhost:9092",
+    "kafka:delete-topics": "kafka-topics --bootstrap-server localhost:9092 --delete --topic webhook:queue:medium,webhook:queue:low --if-exists"
   },
   "keywords": [],
   "author": "",

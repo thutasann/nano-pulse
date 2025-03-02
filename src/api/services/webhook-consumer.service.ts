@@ -18,7 +18,12 @@ export class WebhookConsumerService {
   private static instance: WebhookConsumerService;
   /** High Priority Queue for Redis */
   private readonly HIGH_PRIORITY_QUEUE = constants.webhookPriorityQueue.high;
+  /** Redis Queue */
   private readonly REDIS_QUEUE = constants.redis.redisQueue;
+  /** Medium Priority Topic for Kafka */
+  private readonly MEDIUM_PRIORITY_TOPIC = constants.webhookPriorityQueue.medium;
+  /** Low Priority Topic for Kafka */
+  private readonly LOW_PRIORITY_TOPIC = constants.webhookPriorityQueue.low;
 
   private constructor() {
     this.initializeConsumers();
@@ -73,20 +78,27 @@ export class WebhookConsumerService {
    * Initialize Kafka Consumers
    */
   private async initializeKafkaConsumers() {
-    const consumer = kafka_consumer;
+    try {
+      const consumer = kafka_consumer;
 
-    await consumer.subscribe({
-      topics: [constants.webhookPriorityQueue.medium, constants.webhookPriorityQueue.low],
-      fromBeginning: true,
-    });
+      await consumer.subscribe({
+        topics: [this.MEDIUM_PRIORITY_TOPIC, this.LOW_PRIORITY_TOPIC],
+        fromBeginning: true,
+      });
 
-    await consumer.run({
-      eachMessage: async ({ topic, message }) => {
-        if (!message.value) return;
-        const payload: DeliveryPayload = JSON.parse(message.value.toString());
-        await this.processDelivery(payload);
-      },
-    });
+      await consumer.run({
+        eachMessage: async ({ topic, message }) => {
+          if (!message.value) return;
+          const payload: DeliveryPayload = JSON.parse(message.value.toString());
+          await this.processDelivery(payload);
+        },
+      });
+
+      logger.success('Kafka consumers initialized successfully');
+    } catch (error) {
+      logger.error(`Failed to initialize Kafka consumers: ${error}`);
+      throw error;
+    }
   }
 
   /**

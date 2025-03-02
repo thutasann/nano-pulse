@@ -39,7 +39,12 @@ export class WebhooksService {
   private static instance: WebhooksService;
   /** High Priority Queue for Redis */
   private readonly HIGH_PRIORITY_QUEUE = constants.webhookPriorityQueue.high;
+  /** Medium Priority Topic for Kafka */
   private readonly REDIS_QUEUE = constants.redis.redisQueue;
+  /** Medium Priority Topic for Kafka */
+  private readonly MEDIUM_PRIORITY_TOPIC = constants.webhookPriorityQueue.medium;
+  /** Low Priority Topic for Kafka */
+  private readonly LOW_PRIORITY_TOPIC = constants.webhookPriorityQueue.low;
 
   private constructor() {}
 
@@ -120,12 +125,12 @@ export class WebhooksService {
           break;
 
         case 'MEDIUM':
-          await kafka_produce(constants.webhookPriorityQueue.medium, JSON.stringify(deliveryPayload));
+          await kafka_produce(this.MEDIUM_PRIORITY_TOPIC, JSON.stringify(deliveryPayload));
           logger.info(`Medium priority webhook queued to Kafka: ${delivery?._id}`);
           break;
 
         case 'LOW':
-          await kafka_produce(constants.webhookPriorityQueue.low, JSON.stringify(deliveryPayload));
+          await kafka_produce(this.LOW_PRIORITY_TOPIC, JSON.stringify(deliveryPayload));
           logger.info(`Low priority webhook queued to Kafka: ${delivery?._id}`);
           break;
       }

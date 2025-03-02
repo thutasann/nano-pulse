@@ -1,7 +1,5 @@
-import kafka from '../../../core/connections/kafka-connection';
+import { kafka_producer } from '../../../core/connections/kafka-connection';
 import { logger } from '../utils/logger';
-
-const producer = kafka.producer();
 
 /**
  * Initialize Kafka Producer
@@ -10,7 +8,7 @@ const producer = kafka.producer();
  * @version 1.0.0
  */
 export async function initialize_kafka_producer() {
-  await producer.connect();
+  await kafka_producer.connect();
   logger.success('Kafka Producer connected');
 }
 
@@ -24,7 +22,7 @@ export async function initialize_kafka_producer() {
  */
 export async function kafka_produce(topic: string, message: string) {
   try {
-    await producer.send({
+    await kafka_producer.send({
       topic,
       messages: [
         {
@@ -45,6 +43,6 @@ export async function kafka_produce(topic: string, message: string) {
  * @version 1.0.0
  */
 export async function shutdown_kafka_producer() {
-  await producer.disconnect();
+  await kafka_producer.disconnect();
   logger.success('Kafka Producer disconnected');
 }

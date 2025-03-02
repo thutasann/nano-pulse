@@ -14,15 +14,6 @@ const config = configuration();
 const kafka = new Kafka({
   clientId: constants.kafka.clientId,
   brokers: [config.KAFKA_BROKER || 'localhost:9092'],
-  // ssl: config.KAFKA_USE_SSL ? { rejectUnauthorized: false } : undefined,
-  // sasl:
-  //   config.KAFKA_SASL_USERNAME && config.KAFKA_SASL_PASSWORD
-  //     ? {
-  //         mechanism: 'plain',
-  //         username: config.KAFKA_SASL_USERNAME,
-  //         password: config.KAFKA_SASL_PASSWORD,
-  //       }
-  //     : undefined,
   connectionTimeout: 10000,
   requestTimeout: 30000,
   retry: {
@@ -35,11 +26,57 @@ const kafka = new Kafka({
 });
 
 /**
+ * Kafka Producer
+ * @description Producer Instance for sending messages
+ */
+const kafka_producer = kafka.producer({
+  allowAutoTopicCreation: true,
+  transactionTimeout: 30000,
+});
+
+kafka_producer.on('producer.connect', () => {
+  logger.info('Kafka producer connected');
+});
+
+kafka_producer.on('producer.disconnect', () => {
+  logger.warning('Kafka producer disconnected');
+});
+
+/**
+ * Kafka Consumer
+ * @description Consumer Instance for receiving messages
+ */
+const kafka_consumer = kafka.consumer({
+  groupId: constants.kafka.consumerGroupId,
+  sessionTimeout: 30000,
+  heartbeatInterval: 3000,
+  maxBytesPerPartition: 1048576, // 1MB
+  retry: {
+    initialRetryTime: 300,
+    retries: 10,
+    maxRetryTime: 30000,
+    factor: 1.5,
+  },
+});
+
+kafka_consumer.on('consumer.connect', () => {
+  logger.info('Kafka consumer connected');
+});
+
+kafka_consumer.on('consumer.disconnect', () => {
+  logger.warning('Kafka consumer disconnected');
+});
+
+kafka_consumer.on('consumer.crash', (error) => {
+  logger.error(`Kafka consumer crashed: ${error}`);
+});
+
+/**
  * Verify Kafka Connection
  * @description Verify the Kafka connection
  * @returns {Promise<boolean>}
  */
-const verifyConnection = async () => {
+const verify_kafka_connection = async (): Promise<boolean> => {
   const admin = kafka.admin();
   try {
     await admin.connect();
@@ -53,4 +90,4 @@ const verifyConnection = async () => {
   }
 };
 
-export { kafka as default, verifyConnection };
+export { kafka as default, kafka_consumer, kafka_producer, verify_kafka_connection };

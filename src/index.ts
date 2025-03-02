@@ -1,11 +1,12 @@
 import { createServer } from 'http';
 import mongoose from 'mongoose';
+import { WebhookConsumerService } from './api/services/webhook-consumer.service';
 import app from './app.module';
 import { connectDB } from './core/connections/mongo-connection';
 import { initialize_socket } from './core/initializers/socket/socket.initializer';
 import { WebhookInitializer } from './core/initializers/webhook/webhooks.initializer';
 import { configuration } from './shared/config';
-import { initialize_kafka_producer } from './shared/libraries/kafka/kafka-producer.service';
+import { initialize_kafka_producer, shutdown_kafka_producer } from './shared/libraries/kafka/kafka-producer.service';
 import { logger } from './shared/libraries/utils/logger';
 
 /**
@@ -38,62 +39,6 @@ class NanoPulseApplication {
   }
 
   /**
-   * Initialize Mongodb Connection
-   * @description Initialize Mongodb connection
-   */
-  private async initializeDB(): Promise<void> {
-    try {
-      mongoose.set('maxTimeMS', 5000);
-      await connectDB();
-    } catch (error) {
-      logger.error(`Database connection failed: ${error}`);
-      throw error;
-    }
-  }
-
-  /**
-   * Initialize Message Systems (Kafka Producer)
-   * @description Initialize Kafka producer Connection
-   */
-  private async initializeMessageSystems(): Promise<void> {
-    try {
-      await initialize_kafka_producer();
-    } catch (error) {
-      logger.error(`Message systems initialization failed: ${error}`);
-      throw error;
-    }
-  }
-
-  /**
-   * Initialize Core Services
-   * - Initialize Mongodb Connection
-   * - Initialize Message Systems (Kafka Producer) and Initialize Socket Parallelly
-   * - Initialize Webhook Initializer after 2 seconds
-   */
-  private async bootstrap(): Promise<void> {
-    const startTime = Date.now();
-    logger.info('Bootstrapping core services...');
-
-    try {
-      await this.initializeDB();
-
-      await Promise.all([this.initializeMessageSystems(), initialize_socket(this.httpServer)]);
-
-      setTimeout(() => {
-        this.webhookInitializer.initialize().catch((error) => {
-          logger.error(`Webhook initialization failed: ${error}`);
-        });
-      }, 2000);
-
-      const initTime = Date.now() - startTime;
-      logger.success(`Core services initialized (${initTime}ms)`);
-    } catch (error) {
-      logger.error(`Bootstrap failed: ${error}`);
-      throw error;
-    }
-  }
-
-  /**
    * Setup Graceful Shutdown
    */
   private setupGracefulShutdown(): void {
@@ -102,9 +47,9 @@ class NanoPulseApplication {
       try {
         await Promise.allSettled([
           mongoose.connection.close(),
-          this.webhookInitializer.shutdown(),
           new Promise((resolve) => this.httpServer.close(resolve)),
         ]);
+        await shutdown_kafka_producer();
         process.exit(0);
       } catch (error) {
         logger.error(`Shutdown error: ${error}`);
@@ -119,6 +64,65 @@ class NanoPulseApplication {
       logger.error(`Uncaught Exception: ${error}`);
       shutdown('UNCAUGHT_EXCEPTION');
     });
+  }
+
+  /**
+   * Initialize Mongodb Connection
+   * @description Initialize Mongodb connection
+   */
+  private async initializeDB(): Promise<void> {
+    try {
+      mongoose.set('maxTimeMS', 5000);
+      await connectDB();
+    } catch (error) {
+      logger.error(`Database connection failed: ${error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Initialize Kafka Producer
+   * @description Initialize Kafka producer Connection
+   */
+  private async initializeKafkaProducer(): Promise<void> {
+    try {
+      await initialize_kafka_producer();
+    } catch (error) {
+      logger.error(`Kafka Producer initialization failed: ${error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Initialize Core Services
+   * - Initialize Mongodb Connection
+   * - Initialize Kafka Producer and Initialize Socket Parallelly
+   * - Initialize Webhook Consumer Service
+   * - Initialize Webhook Initializer after 2 seconds
+   */
+  private async bootstrap(): Promise<void> {
+    const startTime = Date.now();
+    logger.info('Bootstrapping core services...');
+
+    try {
+      await this.initializeDB();
+
+      await Promise.all([this.initializeKafkaProducer(), initialize_socket(this.httpServer)]);
+
+      WebhookConsumerService.getInstance();
+
+      setTimeout(() => {
+        this.webhookInitializer.initialize().catch((error) => {
+          logger.error(`Webhook initialization failed: ${error}`);
+        });
+      }, 2000);
+
+      const initTime = Date.now() - startTime;
+      logger.success(`Core services initialized (${initTime}ms)`);
+    } catch (error) {
+      logger.error(`Bootstrap failed: ${error}`);
+      throw error;
+    }
   }
 
   /**

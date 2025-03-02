@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { configuration } from '../../config';
 import { DiscordMessageOptions, DiscordWebhookMessage } from '../../types/discord.type';
 import { logger } from '../utils/logger';
 
@@ -32,6 +33,11 @@ class DiscordMessageService {
    * @description Sends a message to Discord webhook with retry mechanism
    */
   public async sendMessage(message: DiscordWebhookMessage, options: DiscordMessageOptions): Promise<boolean> {
+    if (configuration().NODE_ENV === 'development') {
+      logger.info('Discord message Skipped in Development Environment');
+      return true;
+    }
+
     const { webhookUrl, retryAttempts = this.defaultRetryAttempts, retryDelay = this.defaultRetryDelay } = options;
 
     let attempts = 0;

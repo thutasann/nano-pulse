@@ -1,3 +1,4 @@
+import cluster from 'cluster';
 import { createServer } from 'http';
 import mongoose from 'mongoose';
 import { WebhookConsumerService } from './api/services/webhook-consumer.service';
@@ -5,6 +6,7 @@ import app from './app.module';
 import { connectDB } from './core/connections/mongo-connection';
 import { initializeSocket } from './core/initializers/socket/socket.initializer';
 import { configuration } from './shared/config';
+import { ClusterService } from './shared/libraries/cluster.service';
 import { initialize_kafka_producer, shutdown_kafka_producer } from './shared/libraries/kafka/kafka-producer.service';
 import { logger } from './shared/libraries/utils/logger';
 
@@ -22,6 +24,7 @@ class NanoPulseApplication {
   private static instance: NanoPulseApplication;
   private readonly PORT = configuration().PORT;
   private httpServer = createServer(app);
+  private clusterService = ClusterService.getInstance();
 
   private constructor() {}
 
@@ -39,15 +42,17 @@ class NanoPulseApplication {
   /**
    * Setup Graceful Shutdown
    */
-  private setupGracefulShutdown(): void {
+  private async setupGracefulShutdown(): Promise<void> {
     const shutdown = async (signal: string) => {
       logger.info(`${signal} received. Shutting down...`);
       try {
+        await this.clusterService.gracefulShutdown();
         await Promise.allSettled([
           mongoose.connection.close(),
           new Promise((resolve) => this.httpServer.close(resolve)),
+          shutdown_kafka_producer(),
         ]);
-        await shutdown_kafka_producer();
+
         process.exit(0);
       } catch (error) {
         logger.error(`Shutdown error: ${error}`);
@@ -103,6 +108,10 @@ class NanoPulseApplication {
     logger.info('Bootstrapping core services...');
 
     try {
+      if (cluster.isPrimary) {
+        this.clusterService.initialize();
+      }
+
       await this.initializeDB();
 
       await Promise.all([this.initializeKafkaProducer(), initializeSocket(this.httpServer)]);
@@ -128,16 +137,17 @@ class NanoPulseApplication {
     try {
       const startTime = Date.now();
 
-      this.setupGracefulShutdown();
-
+      await this.setupGracefulShutdown();
       await this.bootstrap();
 
-      this.httpServer.listen(this.PORT, () => {
-        logger.success(`Server is running on port http://localhost:${this.PORT}/api/v1`);
-      });
+      if (cluster.isWorker) {
+        this.httpServer.listen(this.PORT, () => {
+          logger.success(`Worker ${process.pid} is running on port ${this.PORT}`);
+        });
+      }
 
       const bootTime = Date.now() - startTime;
-      logger.success(`Nano Pulse Application initialized 🚀 (${bootTime}ms)`);
+      logger.success(`[Nano Pulse Application] Initialized 🚀 (${bootTime}ms)`);
     } catch (error) {
       logger.error(`Startup failed: ${error}`);
       process.exit(1);

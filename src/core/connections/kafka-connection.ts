@@ -34,14 +34,6 @@ const kafka_producer = kafka.producer({
   transactionTimeout: 30000,
 });
 
-kafka_producer.on('producer.connect', () => {
-  logger.info('Kafka producer connected');
-});
-
-kafka_producer.on('producer.disconnect', () => {
-  logger.warning('Kafka producer disconnected');
-});
-
 /**
  * Kafka Consumer
  * @description Consumer Instance for receiving messages
@@ -57,14 +49,6 @@ const kafka_consumer = kafka.consumer({
     maxRetryTime: 30000,
     factor: 1.5,
   },
-});
-
-kafka_consumer.on('consumer.connect', () => {
-  logger.info('Kafka consumer connected');
-});
-
-kafka_consumer.on('consumer.disconnect', () => {
-  logger.warning('Kafka consumer disconnected');
 });
 
 kafka_consumer.on('consumer.crash', (error) => {

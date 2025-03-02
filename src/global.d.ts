@@ -3,6 +3,7 @@ declare namespace NodeJS {
     // Application
     PORT: number;
     MONGO_URI: string;
+    NODE_ENV: 'development' | 'staging' | 'production';
 
     // Redis
     REDIS_HOST: string;

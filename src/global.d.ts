@@ -13,5 +13,8 @@ declare namespace NodeJS {
     KAFKA_USE_SSL: 'true' | 'false';
     KAFKA_SASL_USERNAME: string;
     KAFKA_SASL_PASSWORD: string;
+
+    // Discord
+    DISCORD_WEBHOOK_URL: string;
   }
 }

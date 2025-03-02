@@ -22,6 +22,9 @@ export const configuration = () => {
     KAFKA_USE_SSL: process.env['KAFKA_USE_SSL'] === 'true',
     KAFKA_SASL_USERNAME: process.env['KAFKA_SASL_USERNAME'] || null,
     KAFKA_SASL_PASSWORD: process.env['KAFKA_SASL_PASSWORD'] || null,
+
+    // Discord
+    DISCORD_WEBHOOK_URL: process.env['DISCORD_WEBHOOK_URL'] || '',
   };
 };
 

@@ -1,6 +1,8 @@
 import { kafka_consumer } from '../../core/connections/kafka-connection';
 import { redisQueue, redisSub } from '../../core/connections/redis-connection';
+import { configuration } from '../../shared/config';
 import { constants } from '../../shared/constants';
+import { discordMessageService } from '../../shared/libraries/discord/discord-message.service';
 import { socket } from '../../shared/libraries/socket/socket.service';
 import { logger } from '../../shared/libraries/utils/logger';
 import { DeliveryPayload } from '../../shared/types/webhooks/delivery-payload.type';
@@ -25,6 +27,8 @@ export class WebhookConsumerService {
   private readonly MEDIUM_PRIORITY_TOPIC = constants.webhookPriorityQueue.medium;
   /** Low Priority Topic for Kafka */
   private readonly LOW_PRIORITY_TOPIC = constants.webhookPriorityQueue.low;
+  /** Discord Webhook URL */
+  private readonly DISCORD_WEBHOOK_URL = configuration().DISCORD_WEBHOOK_URL;
 
   private constructor() {
     this.initializeConsumers();
@@ -139,9 +143,24 @@ export class WebhookConsumerService {
         timestamp: new Date(),
       });
 
+      if (this.DISCORD_WEBHOOK_URL) {
+        await discordMessageService.sendSuccessMessage(
+          'Webhook Delivery Successfully',
+          `Webhook Delivery Successfully : ${payload.id}`,
+          {
+            webhookUrl: this.DISCORD_WEBHOOK_URL,
+          }
+        );
+      }
+
       logger.info(`[Webhook Consumer] Update Delivery Status Successfully : ${payload.id}`);
     } catch (error) {
       logger.error(`[Webhook Consumer] Update Delivery Status Failed : ${error}`);
+      if (this.DISCORD_WEBHOOK_URL) {
+        await discordMessageService.sendErrorMessage(error as Error, 'Webhook Delivery Failed', {
+          webhookUrl: this.DISCORD_WEBHOOK_URL,
+        });
+      }
     }
   }
 

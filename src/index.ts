@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { WebhookConsumerService } from './api/services/webhook-consumer.service';
 import app from './app.module';
 import { connectDB } from './core/connections/mongo-connection';
-import { initialize_socket } from './core/initializers/socket/socket.initializer';
+import { initializeSocket } from './core/initializers/socket/socket.initializer';
 import { configuration } from './shared/config';
 import { initialize_kafka_producer, shutdown_kafka_producer } from './shared/libraries/kafka/kafka-producer.service';
 import { logger } from './shared/libraries/utils/logger';
@@ -105,7 +105,7 @@ class NanoPulseApplication {
     try {
       await this.initializeDB();
 
-      await Promise.all([this.initializeKafkaProducer(), initialize_socket(this.httpServer)]);
+      await Promise.all([this.initializeKafkaProducer(), initializeSocket(this.httpServer)]);
 
       WebhookConsumerService.getInstance();
 

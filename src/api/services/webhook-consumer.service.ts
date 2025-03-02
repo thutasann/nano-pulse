@@ -1,6 +1,7 @@
 import { kafka_consumer } from '../../core/connections/kafka-connection';
 import { redisQueue, redisSub } from '../../core/connections/redis-connection';
 import { constants } from '../../shared/constants';
+import { socket } from '../../shared/libraries/socket/socket.service';
 import { logger } from '../../shared/libraries/utils/logger';
 import { DeliveryPayload } from '../../shared/types/webhooks/delivery-payload.type';
 import { WebhookDeliveryDocument } from '../models/webhooks-delivery.model';
@@ -130,6 +131,14 @@ export class WebhookConsumerService {
   private async processDelivery(payload: Partial<WebhookDeliveryDocument>) {
     try {
       await WebhookDeliveryRepository.updateDeliveryStatus(payload.id as string, 'success', payload);
+
+      socket.emitToAll('notification', {
+        id: payload.id,
+        type: 'info',
+        message: 'Webhook Delivery Successfully',
+        timestamp: new Date(),
+      });
+
       logger.info(`[Webhook Consumer] Update Delivery Status Successfully : ${payload.id}`);
     } catch (error) {
       logger.error(`[Webhook Consumer] Update Delivery Status Failed : ${error}`);

@@ -1,6 +1,13 @@
-import { redisRateLimit } from '../core/connections/redis-connection';
-import { logger } from '../shared/libraries/utils/logger';
+// @ts-check
+const { redisRateLimit } = require('../src/core/connections/redis-connection');
+const { logger } = require('../src/shared/libraries/utils/logger');
 
+/**
+ * Setup Test API Key
+ * @description - Setup test API key for local development
+ * @author - [thuta](https://github.com/thutasann)
+ * @version - 1.0.0
+ */
 async function setupTestApiKey() {
   const TEST_API_KEY = 'test-123';
   try {
@@ -12,5 +19,4 @@ async function setupTestApiKey() {
     process.exit(0);
   }
 }
-
 setupTestApiKey();

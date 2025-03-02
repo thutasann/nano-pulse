@@ -32,5 +32,9 @@ export const apiConfig = {
      * Events Route
      */
     events: '/api/v1/events',
+    /**
+     * Logs Route
+     */
+    logs: '/api/v1/logs',
   },
 };

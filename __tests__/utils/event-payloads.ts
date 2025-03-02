@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { WebhookEvent } from '../../src/app-express/shared/types/webhooks/webhooks.base.type';
+import { WebhookEvent } from '../../src/nano-pulse-express/shared/types/webhooks/webhooks.base.type';
 
 const EVENT_TYPES = {
   USER: ['user.created', 'user.updated', 'user.deleted'],

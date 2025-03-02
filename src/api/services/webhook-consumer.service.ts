@@ -115,9 +115,9 @@ export class WebhookConsumerService {
   private async processDelivery(payload: Partial<WebhookDeliveryDocument>) {
     try {
       await WebhookDeliveryRepository.updateDeliveryStatus(payload.id as string, 'success', payload);
-      logger.info(`[Webhook Consumer] Successfully delivered webhook: ${payload.id}`);
+      logger.info(`[Webhook Consumer] Update Delivery Status Successfully : ${payload.id}`);
     } catch (error) {
-      logger.error(`[Webhook Consumer] Webhook Delivery Process Failed : ${error}`);
+      logger.error(`[Webhook Consumer] Update Delivery Status Failed : ${error}`);
     }
   }
 

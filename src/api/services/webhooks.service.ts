@@ -239,6 +239,7 @@ export class WebhooksService {
   /**
    * Get Webhook Stats
    * @param subscriptionId - subscription id
+   * @todo: Implement realtime stats
    * @description Get the webhook stats for a given subscription
    * - Delivery stats
    * - Realtime stats
@@ -246,28 +247,10 @@ export class WebhooksService {
    */
   async getWebhookStats(subscriptionId: string) {
     try {
-      const [deliveryStats, realtimeStats] = await Promise.all([
-        WebhookDeliveryRepository.getDeliveryAnalytics(subscriptionId),
-        redis.hgetall(`stats:webhook:${subscriptionId}`),
-      ]);
-
-      const timeline = await redis.zrange(`stats:webhook:${subscriptionId}:timeline`, 0, -1, 'WITHSCORES');
-
-      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-      const recentEvents = timeline.filter((t) => parseInt(t) > fiveMinutesAgo).length;
+      const [deliveryStats] = await Promise.all([WebhookDeliveryRepository.getDeliveryAnalytics(subscriptionId)]);
 
       return {
         ...deliveryStats,
-        realtime: {
-          totalEvents: parseInt(realtimeStats.total_events || '0'),
-          eventsPerMinute: recentEvents / 5,
-          eventTypes: Object.entries(realtimeStats)
-            .filter(([key]) => key.startsWith('event_type:'))
-            .map(([key, value]) => ({
-              type: key.replace('event_type:', ''),
-              count: parseInt(value),
-            })),
-        },
       };
     } catch (error) {
       logger.error(`Failed to get webhook stats: ${error}`);

@@ -55,9 +55,9 @@ export class WebhookInitializer {
     try {
       await this.initializeEventBus();
       this.isInitialized = true;
-      logger.success(`Webhook System Event Bus Initialized`);
+      logger.success(`[Webhook Initializer] System Event Bus Initialized`);
     } catch (error) {
-      logger.error(`Webhook System Event Bus Initialization Failed: ${error}`);
+      logger.error(`[Webhook Initializer] System Event Bus Initialization Failed: ${error}`);
       throw error;
     }
   }

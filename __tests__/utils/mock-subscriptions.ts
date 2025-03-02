@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { WebhookSubscriptionRepository } from '../../src/api/repositories/webhooks-subscription.repository';
-import { WebhookSubscriptionPrioritySchema } from '../../src/core/zod-schemas/webhooks/webhooks.schema';
-import { WebhookSubscription } from '../../src/shared/types/webhooks/webhooks.base.type';
+import { WebhookSubscriptionRepository } from '../../src/app-express/api/repositories/webhooks-subscription.repository';
+import { WebhookSubscriptionPrioritySchema } from '../../src/app-express/core/zod-schemas/webhooks/webhooks.schema';
+import { WebhookSubscription } from '../../src/app-express/shared/types/webhooks/webhooks.base.type';
 
 // Get valid priorities from the schema
 const PRIORITIES = WebhookSubscriptionPrioritySchema.options;

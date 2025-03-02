@@ -1,13 +1,19 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { WebhooksService } from '../src/api/services/webhooks.service';
-import app from '../src/app.module';
-import { redis, redisPub, redisQueue, redisRateLimit, redisSub } from '../src/core/connections/redis-connection';
-import { configuration } from '../src/shared/config';
+import { WebhooksService } from '../src/app-express/api/services/webhooks.service';
+import app from '../src/app-express/app.module';
+import {
+  redis,
+  redisPub,
+  redisQueue,
+  redisRateLimit,
+  redisSub,
+} from '../src/app-express/core/connections/redis-connection';
+import { configuration } from '../src/app-express/shared/config';
 import {
   initialize_kafka_producer,
   shutdown_kafka_producer,
-} from '../src/shared/libraries/kafka/kafka-producer.service';
+} from '../src/app-express/shared/libraries/kafka/kafka-producer.service';
 import { constants } from './utils/constants';
 import { generateEvents } from './utils/event-payloads';
 import { mockSubscriptions } from './utils/mock-subscriptions';

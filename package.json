@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon src/app-express/index.ts",
     "build": "tsc",
     "setup-apikey": "ts-node scripts/setup-test-apikey.js",
     "test": "jest --detectOpenHandles",

@@ -25,6 +25,9 @@ export const redisSub = new Redis(redisClient());
 /** Redis Rate Limit Client */
 export const redisRateLimit = new Redis(redisClient());
 
+/** Redis Queue Client */
+export const redisQueue = new Redis(redisClient());
+
 redis.on('error', (error) => {
   logger.error(`Redis connection error : ${error.message}`);
 });

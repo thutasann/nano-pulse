@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { WebhooksService } from '../src/api/services/webhooks.service';
 import app from '../src/app.module';
-import { redis, redisPub, redisRateLimit, redisSub } from '../src/core/connections/redis-connection';
+import { redis, redisPub, redisQueue, redisRateLimit, redisSub } from '../src/core/connections/redis-connection';
 import { configuration } from '../src/shared/config';
 import {
   initialize_kafka_producer,
@@ -21,6 +21,7 @@ describe('Webhook Routes Integration Tests', () => {
       new Promise((resolve) => redisPub.once('ready', resolve)),
       new Promise((resolve) => redisSub.once('ready', resolve)),
       new Promise((resolve) => redisRateLimit.once('ready', resolve)),
+      new Promise((resolve) => redisQueue.once('ready', resolve)),
     ]);
 
     await mongoose.connect(configuration().MONGO_URI || '');
@@ -61,6 +62,10 @@ describe('Webhook Routes Integration Tests', () => {
       new Promise((resolve) => {
         redisRateLimit.disconnect();
         redisRateLimit.on('end', resolve);
+      }),
+      new Promise((resolve) => {
+        redisQueue.disconnect();
+        redisQueue.on('end', resolve);
       }),
     ]);
   });

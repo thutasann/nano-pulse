@@ -1,5 +1,5 @@
 import { kafka_consumer } from '../../core/connections/kafka-connection';
-import { redis, redisSub } from '../../core/connections/redis-connection';
+import { redisQueue, redisSub } from '../../core/connections/redis-connection';
 import { constants } from '../../shared/constants';
 import { logger } from '../../shared/libraries/utils/logger';
 import { DeliveryPayload } from '../../shared/types/webhooks/delivery-payload.type';
@@ -16,7 +16,7 @@ import { WebhookDeliveryRepository } from '../repositories/webhooks-delivery.rep
  */
 export class WebhookConsumerService {
   private static instance: WebhookConsumerService;
-  private readonly HIGH_PRIORITY_QUEU = constants.webhookPriorityQueue.high;
+  private readonly HIGH_PRIORITY_QUEUE = constants.webhookPriorityQueue.high;
 
   private constructor() {
     this.initializeConsumers();
@@ -79,6 +79,7 @@ export class WebhookConsumerService {
 
     await consumer.run({
       eachMessage: async ({ topic, message }) => {
+        logger.info(`[Webhook Consumer] Received message from Kafka: ${message.value}`);
         if (!message.value) return;
         const payload: DeliveryPayload = JSON.parse(message.value.toString());
         await this.processDelivery(payload);
@@ -92,7 +93,7 @@ export class WebhookConsumerService {
   private async processRedisQueue() {
     while (true) {
       try {
-        const message = await redis.rpop(this.HIGH_PRIORITY_QUEU);
+        const message = await redisQueue.rpop(this.HIGH_PRIORITY_QUEUE);
         if (!message) {
           await new Promise((resolve) => setTimeout(resolve, 1000));
           continue;
@@ -115,8 +116,8 @@ export class WebhookConsumerService {
    */
   private async processDelivery(payload: Partial<WebhookDeliveryDocument>) {
     try {
-      await WebhookDeliveryRepository.updateDeliveryStatus(payload._id as string, 'success', payload);
-      logger.info(`[Webhook Consumer] Successfully delivered webhook: ${payload._id}`);
+      await WebhookDeliveryRepository.updateDeliveryStatus(payload.id as string, 'success', payload);
+      logger.info(`[Webhook Consumer] Successfully delivered webhook: ${payload.id}`);
     } catch (error) {
       logger.error(`[Webhook Consumer] Webhook Delivery Process Failed : ${error}`);
     }
@@ -129,6 +130,7 @@ export class WebhookConsumerService {
     try {
       await kafka_consumer.disconnect();
       await redisSub.unsubscribe();
+      await redisQueue.quit();
       logger.info('Webhook consumer service shut down successfully');
     } catch (error) {
       logger.error(`Error shutting down webhook consumer: ${error}`);

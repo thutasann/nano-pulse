@@ -1,19 +1,19 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { WebhooksService } from '../src/app-express/api/services/webhooks.service';
-import app from '../src/app-express/app.module';
+import { WebhooksService } from '../src/nano-pulse-express/api/services/webhooks.service';
+import app from '../src/nano-pulse-express/app.module';
 import {
   redis,
   redisPub,
   redisQueue,
   redisRateLimit,
   redisSub,
-} from '../src/app-express/core/connections/redis-connection';
-import { configuration } from '../src/app-express/shared/config';
+} from '../src/nano-pulse-express/core/connections/redis-connection';
+import { configuration } from '../src/nano-pulse-express/shared/config';
 import {
   initialize_kafka_producer,
   shutdown_kafka_producer,
-} from '../src/app-express/shared/libraries/kafka/kafka-producer.service';
+} from '../src/nano-pulse-express/shared/libraries/kafka/kafka-producer.service';
 import { eventPayloads } from './utils/event-payloads';
 import { mockSubscriptions } from './utils/mock-subscriptions';
 

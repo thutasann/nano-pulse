@@ -2,5 +2,5 @@
 
 # Services
 
-- [nodejs + express](./app-express/)
+- [expressjs service](./nano-pulse-express/)
 - [spring boot auth service](./nano-pulse-auth)

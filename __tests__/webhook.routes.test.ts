@@ -75,24 +75,24 @@ describe('Webhook Routes Integration Tests', () => {
       const response = await request(app)
         .post('/api/v1/webhooks/events')
         .set('x-api-key', API_KEY)
-        .send(eventPayloads[2]);
+        .send(eventPayloads[0]);
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       deliveryId = response.body.data.deliveryId;
     });
 
-    // test('should handle concurrent webhook events', async () => {
-    //   const requests = eventPayloads.map((payload) =>
-    //     request(app).post('/api/v1/webhooks/events').set('x-api-key', API_KEY).send(payload)
-    //   );
+    test('should handle concurrent webhook events', async () => {
+      const requests = eventPayloads.map((payload) =>
+        request(app).post('/api/v1/webhooks/events').set('x-api-key', API_KEY).send(payload)
+      );
 
-    //   const responses = await Promise.all(requests);
+      const responses = await Promise.all(requests);
 
-    //   responses.forEach((response) => {
-    //     expect(response.status).toBe(200);
-    //     expect(response.body.success).toBe(true);
-    //   });
-    // });
+      responses.forEach((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+      });
+    });
   });
 });

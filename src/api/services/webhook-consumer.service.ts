@@ -79,7 +79,6 @@ export class WebhookConsumerService {
 
     await consumer.run({
       eachMessage: async ({ topic, message }) => {
-        logger.info(`[Webhook Consumer] Received message from Kafka: ${message.value}`);
         if (!message.value) return;
         const payload: DeliveryPayload = JSON.parse(message.value.toString());
         await this.processDelivery(payload);
@@ -112,7 +111,6 @@ export class WebhookConsumerService {
    * @param payload - Webhok Delivery Payload
    * @todo - Third Party Integrations
    * @todo - Requeue Delivery if failed
-   *
    */
   private async processDelivery(payload: Partial<WebhookDeliveryDocument>) {
     try {

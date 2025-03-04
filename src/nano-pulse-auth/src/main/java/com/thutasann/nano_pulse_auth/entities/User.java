@@ -21,6 +21,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * User Entity
+ */
 @Document(collection = "users")
 @Data
 @Builder

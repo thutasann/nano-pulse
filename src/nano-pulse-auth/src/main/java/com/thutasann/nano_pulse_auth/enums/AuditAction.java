@@ -1,4 +1,4 @@
-package com.thutasann.nano_pulse_auth.entities;
+package com.thutasann.nano_pulse_auth.enums;
 
 public enum AuditAction {
     LOGIN,

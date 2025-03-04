@@ -15,6 +15,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Token Entity
+ */
 @Document(collection = "tokens")
 @Data
 @Builder

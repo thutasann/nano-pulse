@@ -2,12 +2,9 @@ package com.thutasann.nano_pulse_auth.entities;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
-import javax.management.relation.Role;
-
+import com.thutasann.nano_pulse_auth.enums.Role;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -45,21 +42,11 @@ public class User implements UserDetails {
     @Indexed
     private String lastName;
 
+    @Indexed
+    private Role role;
+
     @Builder.Default
     private boolean enabled = true;
-
-    @Builder.Default
-    private boolean accountNonExpired = true;
-
-    @Builder.Default
-    private boolean accountNonLocked = true;
-
-    @Builder.Default
-    private boolean credentialsNonExpired = true;
-
-    @Indexed
-    @Builder.Default
-    private Set<Role> roles = new HashSet<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -72,9 +59,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
-                .collect(Collectors.toList());
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
@@ -83,18 +68,23 @@ public class User implements UserDetails {
     }
 
     @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
     public boolean isAccountNonExpired() {
-        return accountNonExpired;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return accountNonLocked && (lockoutEndTime == null || LocalDateTime.now().isAfter(lockoutEndTime));
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
+        return true;
     }
 
     @Override

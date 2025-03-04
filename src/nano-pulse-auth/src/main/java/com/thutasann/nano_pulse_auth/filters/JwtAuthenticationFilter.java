@@ -26,16 +26,22 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final TokenRepository tokenRepository;
 
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService,
+            TokenRepository tokenRepository) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+        this.tokenRepository = tokenRepository;
+    }
+
+    @SuppressWarnings("null")
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

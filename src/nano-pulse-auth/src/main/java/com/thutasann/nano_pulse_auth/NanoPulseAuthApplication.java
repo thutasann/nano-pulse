@@ -12,7 +12,7 @@ public class NanoPulseAuthApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NanoPulseAuthApplication.class, args);
-		logger.info("Nano Pulse Auth Application Started at http://localhost:8989");
+		logger.info("Nano Pulse Auth Application Started at http://localhost:8989/api/v1");
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import com.thutasann.nano_pulse_auth.enums.Role;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,16 +32,16 @@ public class User implements UserDetails {
     @Id
     private String id;
 
-    @Indexed(unique = true)
-    private String email;
-
-    private String password;
-
     @Indexed
     private String firstName;
 
     @Indexed
     private String lastName;
+
+    @Indexed(unique = true)
+    private String email;
+
+    private String password;
 
     @Indexed
     private Role role;
@@ -48,18 +49,22 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean enabled = true;
 
+    @Builder.Default
+    private boolean accountNonLocked = true;
+
+    private int failedAttempts;
+    private LocalDateTime lockTime;
+    private LocalDateTime lastLoginAt;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
-    private String lastLoginIp;
-    private LocalDateTime lastLoginAt;
-    private LocalDateTime passwordChangedAt;
-    private int failedLoginAttempts;
-    private LocalDateTime lockoutEndTime;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -79,7 +84,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return accountNonLocked;
     }
 
     @Override

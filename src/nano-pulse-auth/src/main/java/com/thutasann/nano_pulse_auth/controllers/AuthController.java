@@ -11,6 +11,7 @@ import com.thutasann.nano_pulse_auth.request.LoginRequest;
 import com.thutasann.nano_pulse_auth.request.RegisterRequest;
 import com.thutasann.nano_pulse_auth.response.AuthResponse;
 import com.thutasann.nano_pulse_auth.services.AuthenticationService;
+import com.thutasann.nano_pulse_auth.services.kafka.KafkaProducerService;
 
 import jakarta.validation.Valid;
 
@@ -19,6 +20,9 @@ import jakarta.validation.Valid;
 public class AuthController {
     @Autowired
     private AuthenticationService authService;
+
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
@@ -29,6 +33,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+        AuthResponse response = authService.login(request);
+        kafkaProducerService.sendUserAuthEvent("user-logged-in", response);
+        return ResponseEntity.ok(response);
     }
 }

@@ -60,6 +60,7 @@ public class AuthenticationService {
         saveUserToken(savedUser, accessToken);
 
         return AuthResponse.builder()
+                .userId(user.getId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
@@ -91,6 +92,7 @@ public class AuthenticationService {
         saveUserToken(user, accessToken);
 
         return AuthResponse.builder()
+                .userId(user.getId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")

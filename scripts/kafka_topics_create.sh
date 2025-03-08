@@ -54,6 +54,7 @@ sleep 5
 # Create topics
 create_topic "webhook_queue_medium" 3 1
 create_topic "webhook_queue_low" 3 1
+create_topic "user_auth_events" 3 1
 
 # List all topics
 echo "${YELLOW}Current Kafka topics:${NC}"

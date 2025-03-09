@@ -1,6 +1,7 @@
 import { apiConfig } from './api-config.constants';
 import { kafkaConstants } from './kafka.constants';
 import { redisConstants } from './redis.constants';
+import { userAuthConstants } from './user-auth.constants';
 import { webhokPriorityConstants } from './webhook-priority.constants';
 
 /**
@@ -26,6 +27,10 @@ export const constants = {
    * API Configs
    */
   api: { ...apiConfig },
+  /**
+   * User Auth
+   */
+  userAuth: { ...userAuthConstants },
 } as const;
 
 export type AppConstants = typeof constants;

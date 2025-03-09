@@ -1,7 +1,7 @@
-import cluster from 'cluster';
 import { createServer } from 'http';
 import mongoose from 'mongoose';
-import { WebhookConsumerService } from './api/services/webhook-consumer.service';
+import { UserAuthConsumerService } from './api/services/consumers/user-auth-consumer.service';
+import { WebhookConsumerService } from './api/services/consumers/webhook-consumer.service';
 import app from './app.module';
 import { connectDB } from './core/connections/mongo-connection';
 import { initializeSocket } from './core/initializers/socket/socket.initializer';
@@ -46,7 +46,7 @@ class NanoPulseApplication {
     const shutdown = async (signal: string) => {
       logger.info(`${signal} received. Shutting down...`);
       try {
-        await this.clusterService.gracefulShutdown();
+        // await this.clusterService.gracefulShutdown();
         await Promise.allSettled([
           mongoose.connection.close(),
           new Promise((resolve) => this.httpServer.close(resolve)),
@@ -108,15 +108,16 @@ class NanoPulseApplication {
     logger.info('Bootstrapping core services...');
 
     try {
-      if (cluster.isPrimary) {
-        this.clusterService.initialize();
-      }
+      // if (cluster.isPrimary) {
+      //   this.clusterService.initialize();
+      // }
 
       await this.initializeDB();
 
       await Promise.all([this.initializeKafkaProducer(), initializeSocket(this.httpServer)]);
 
       WebhookConsumerService.getInstance();
+      UserAuthConsumerService.getInstance();
 
       const initTime = Date.now() - startTime;
       logger.success(`Core services initialized (${initTime}ms)`);
@@ -140,11 +141,12 @@ class NanoPulseApplication {
       await this.setupGracefulShutdown();
       await this.bootstrap();
 
-      if (cluster.isWorker) {
-        this.httpServer.listen(this.PORT, () => {
-          logger.success(`Worker ${process.pid} is running on port ${this.PORT}`);
-        });
-      }
+      // if (cluster.isWorker) {
+      // }
+
+      this.httpServer.listen(this.PORT, () => {
+        logger.success(`Worker ${process.pid} is running on port ${this.PORT}`);
+      });
 
       const bootTime = Date.now() - startTime;
       logger.success(`[Nano Pulse Application] Initialized 🚀 (${bootTime}ms)`);

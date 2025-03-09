@@ -264,6 +264,28 @@ class SocketService {
   public getIO(): TypedServer {
     return this.ensureIOInitialized();
   }
+
+  /**
+   * Emit to a specific room
+   * @param room - Room ID (usually userId)
+   * @param event - Event name
+   * @param data - Event data
+   */
+  emitToRoom(room: string, event: any, data: any): void {
+    this.io?.to(room).emit(event, data);
+  }
+
+  /**
+   * Join a room
+   * @param socketId - Socket ID
+   * @param room - Room to join (usually userId)
+   */
+  joinRoom(socketId: string, room: string): void {
+    const socket = this.io?.sockets.sockets.get(socketId);
+    if (socket) {
+      socket.join(room);
+    }
+  }
 }
 
 /**

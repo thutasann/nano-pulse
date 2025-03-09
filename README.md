@@ -9,8 +9,8 @@ This system will handle real-time data processing for:
 
 ## System Architecture
 
-[This is the High Level System Architecture](./docs/system-architecture.md)
-[Miroservices High Level System Architecture](./docs/microservices/microservices-architecture.md)
+- [Miroservices High Level System Architecture](./docs/microservices/microservices-architecture.md)
+- [Core Components](./docs/microservices/core-components.md)
 
 ---
 

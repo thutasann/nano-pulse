@@ -42,10 +42,12 @@ public class KafkaProducerService {
                     .build();
 
             String payload = objectMapper.writeValueAsString(event);
+            log.info("Sending Kafka message to topic: {} with payload: {}", userAuthTopic, payload);
             kafkaTemplate.send(userAuthTopic, authResponse.getUserId(), payload);
             log.info("Sent user auth event: {} for user: {}", eventType, authResponse.getEmail());
         } catch (Exception e) {
-            log.info("Send user auth event : {} for user : {}", eventType, authResponse.getEmail());
+            log.error("Failed to send user auth event: {} for user: {} - Error: {}",
+                    eventType, authResponse.getEmail(), e.getMessage(), e);
         }
     }
 }

@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io';
+import { UserAuth } from '../user-auth/user-auth.type';
 import { ErrorPayload, MessagePayload, NotificationPayload, StatusPayload } from './socket-payload.type';
 
 /**
@@ -11,6 +12,7 @@ export interface ServerToClientEvents {
   notification: (data: NotificationPayload) => void;
   error: (error: ErrorPayload) => void;
   statusUpdate: (status: StatusPayload) => void;
+  userAuthEvent: (data: UserAuth.UserAuthEvent) => void;
 }
 
 /**

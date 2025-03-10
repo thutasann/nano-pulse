@@ -1,6 +1,6 @@
 // @ts-check
-const { redisRateLimit } = require('../src/core/connections/redis-connection');
-const { logger } = require('../src/shared/libraries/utils/logger');
+const { redisRateLimit } = require('../src/nano-pulse-express/core/connections/redis-connection');
+const { logger } = require('../src/nano-pulse-express/shared/libraries/utils/logger');
 
 /**
  * Setup Test API Key

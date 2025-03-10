@@ -12,5 +12,6 @@
   "java.format.settings.url": "eclipse-formatter.xml",
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
-  }
+  },
+  "java.debug.settings.onBuildFailureProceed": true
 }

@@ -1,4 +1,4 @@
-package com.thutasann.nano_pulse_auth.config;
+package com.thutasann.nano_pulse_workflows.config;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SuppressWarnings("null")
 @Configuration
-@EnableMongoRepositories(basePackages = "com.thutasann.nano_pulse_auth.repositories")
+@EnableMongoRepositories(basePackages = "com.thutasann.nano_pulse_workflows.repositories")
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Value("${spring.data.mongodb.uri}")
@@ -21,7 +21,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Override
     protected String getDatabaseName() {
-        return "nano_pulse_auth";
+        return "nano_pulse_workflows";
     }
 
     @Override

@@ -4,3 +4,4 @@
 
 - [expressjs service](./nano-pulse-express/)
 - [spring boot auth service](./nano-pulse-auth)
+- [spring boot workflows service](./nano-pulse-workflows)

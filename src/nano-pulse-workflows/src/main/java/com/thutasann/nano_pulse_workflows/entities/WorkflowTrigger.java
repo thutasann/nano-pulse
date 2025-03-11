@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "workflow_triggers")
 public class WorkflowTrigger {
     private String id;
 

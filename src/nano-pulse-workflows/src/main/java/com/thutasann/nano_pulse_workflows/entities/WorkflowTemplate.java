@@ -32,6 +32,8 @@ public class WorkflowTemplate {
     @Id
     private String id;
 
+    private String name;
+
     @Indexed
     private String templateId;
 

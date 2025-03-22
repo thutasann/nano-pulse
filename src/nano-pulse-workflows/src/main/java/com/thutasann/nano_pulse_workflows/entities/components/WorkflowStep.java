@@ -1,4 +1,4 @@
-package com.thutasann.nano_pulse_workflows.entities;
+package com.thutasann.nano_pulse_workflows.entities.components;
 
 import java.util.ArrayList;
 import java.util.HashMap;

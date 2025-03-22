@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.thutasann.nano_pulse_workflows.entities.components.WorkflowStep;
+import com.thutasann.nano_pulse_workflows.entities.components.WorkflowTrigger;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

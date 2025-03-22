@@ -12,6 +12,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.thutasann.nano_pulse_workflows.entities.components.IntegrationAction;
+import com.thutasann.nano_pulse_workflows.entities.components.IntegrationTrigger;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

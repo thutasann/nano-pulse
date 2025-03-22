@@ -33,7 +33,7 @@ public interface WorkflowTemplateRepository extends MongoRepository<WorkflowTemp
     @Query("{'tenantId': ?0, 'permissionRoleIds': { $in: ?1 }}")
     List<WorkflowTemplate> findByTenantIdAndPermissionRoleIds(String tenantId, List<String> roleIds);
 
-    @Query("{'tenantId': ?0 'name': { $regex: ?1, $options: 'i' }}")
+    @Query("{'tenantId': ?0, 'name': { $regex: ?1, $options: 'i' }}")
     List<WorkflowTemplate> searchByTenantIdAndName(String tenantId, String namePattern);
 
     long countByTenantId(String tenantId);

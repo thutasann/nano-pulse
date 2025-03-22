@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @SuppressWarnings("null")
 @Configuration
@@ -22,6 +24,16 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Override
     protected String getDatabaseName() {
         return "nano_pulse_workflows";
+    }
+
+    @Bean
+    public ValidatingMongoEventListener validatingMongoEventListener(LocalValidatorFactoryBean factory) {
+        return new ValidatingMongoEventListener(factory);
+    }
+
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        return new LocalValidatorFactoryBean();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.thutasann.nano_pulse_workflows.entities;
+package com.thutasann.nano_pulse_workflows.entities.components;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IntegrationTrigger {
+public class IntegrationAction {
     private String id;
 
     private String name;
@@ -21,15 +21,15 @@ public class IntegrationTrigger {
 
     private String description;
 
-    private TriggerType type;
-
     @Builder.Default
     private Map<String, Object> inputSchema = new HashMap<>();
 
     @Builder.Default
     private Map<String, Object> outputSchema = new HashMap<>();
 
-    private String webhookUrl;
+    private String endpoint;
+
+    private String method;
 
     @Builder.Default
     private Map<String, Object> defaultConfig = new HashMap<>();
@@ -39,8 +39,4 @@ public class IntegrationTrigger {
     private String category;
 
     private String icon;
-
-    public enum TriggerType {
-        WEBHOOK, POLLING, EVENT
-    }
 }
